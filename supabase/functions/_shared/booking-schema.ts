@@ -1,15 +1,5 @@
 import { z } from "zod";
-
-export const EXPERIENCES = [
-  "Private Cape Peninsula Tour",
-  "Private Cape Winelands Tour",
-  "City & Table Mountain",
-  "Aquila Safari Day",
-  "Tailor-made Journey",
-  "Safari (Kruger / Sabi Sands)",
-  "Transfer / Chauffeur",
-  "Not sure yet",
-] as const;
+import { PACKAGE_TYPES } from "./package-schema.ts";
 
 export function todayInSouthAfrica() {
   return new Intl.DateTimeFormat("en-CA", {
@@ -21,10 +11,18 @@ export function todayInSouthAfrica() {
 }
 
 const optionalText = (max: number) => z.string().trim().max(max);
+export function isTransferBooking(data: {
+  experience: string;
+  package_type?: string | null | undefined;
+}) {
+  return data.package_type
+    ? data.package_type === "transfer"
+    : data.experience === "Transfer / Chauffeur";
+}
 const bookingFields = {
-  experience: z.enum(EXPERIENCES, {
-    errorMap: () => ({ message: "Choose an experience to continue." }),
-  }),
+  experience: z.string().trim().min(2, "Choose an experience to continue.").max(140),
+  package_id: z.string().uuid().optional(),
+  package_type: z.enum(PACKAGE_TYPES).optional(),
   travel_date: z
     .string()
     .refine(
@@ -74,6 +72,7 @@ function validateTravel(
     flexible_dates: boolean;
     travel_date: string;
     experience: string;
+    package_type?: string | undefined;
     pickup_location: string;
     dropoff_location: string;
     pickup_time: string;
@@ -86,7 +85,7 @@ function validateTravel(
       path: ["travel_date"],
       message: "Choose a travel date or select flexible dates.",
     });
-  if (data.experience === "Transfer / Chauffeur") {
+  if (isTransferBooking(data)) {
     for (const key of ["pickup_location", "dropoff_location"] as const) {
       if (data[key].length < 2)
         ctx.addIssue({
@@ -110,6 +109,7 @@ export const bookingStepSchemas = [
   z
     .object({
       experience: bookingFields.experience,
+      package_type: bookingFields.package_type,
       travel_date: bookingFields.travel_date,
       flexible_dates: bookingFields.flexible_dates,
       adults: bookingFields.adults,

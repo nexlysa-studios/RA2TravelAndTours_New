@@ -1,5 +1,5 @@
 import type { BookingInput } from "./booking-schema.ts";
-import { formatTravelDate } from "./booking-schema.ts";
+import { formatTravelDate, isTransferBooking } from "./booking-schema.ts";
 
 export type EmailBooking = Omit<BookingInput, "consent" | "travel_date"> & {
   id: string;
@@ -39,7 +39,7 @@ export function bookingEmail(b: EmailBooking, audience: "guest" | "admin", siteU
   if (b.dropoff_location) rows.push(["Drop-off", b.dropoff_location]);
   if (b.pickup_time) rows.push(["Pickup time", `${b.pickup_time} (South African time, UTC+2)`]);
   if (b.flight_number) rows.push(["Flight", b.flight_number]);
-  if (b.experience === "Transfer / Chauffeur") rows.push(["Luggage", `${b.luggage} pieces`]);
+  if (isTransferBooking(b)) rows.push(["Luggage", `${b.luggage} pieces`]);
   if (b.special_requests) rows.push(["Additional details", b.special_requests]);
   const note =
     "This confirms receipt of your request. Your trip is only confirmed once RA2 has agreed availability, itinerary and pricing with you. No payment has been taken.";

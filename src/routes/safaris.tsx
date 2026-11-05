@@ -1,12 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import hero from "@/assets/safari.jpg";
 import { CtaBand, PageHero } from "@/components/site/SiteChrome";
+import { TourCardView } from "@/components/site/TourCardView";
+import { publicPackagesOptions } from "@/lib/packages";
 
 export const Route = createFileRoute("/safaris")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(publicPackagesOptions),
   head: () => ({
     meta: [
       { title: "Safaris: Aquila, Kruger & Sabi Sands — RA2 Travel and Tours" },
-      { name: "description", content: "Compare Aquila day safaris with Kruger and Sabi Sands stays, and how RA2 arranges travel." },
+      {
+        name: "description",
+        content:
+          "Compare Aquila day safaris with Kruger and Sabi Sands stays, and how RA2 arranges travel.",
+      },
       { property: "og:title", content: "Safaris with RA2" },
       { property: "og:description", content: "Aquila, Kruger and Sabi Sands, clearly explained." },
     ],
@@ -14,30 +22,34 @@ export const Route = createFileRoute("/safaris")({
   component: Page,
 });
 
-const S = [
-  { name: "Aquila", where: "Touws River, Western Cape · approx. 2 hrs from Cape Town", stay: "Day trip or overnight", drives: "Game drives run by the reserve", transport: "RA2 private road transfer from Cape Town" },
-  { name: "Kruger", where: "Mpumalanga & Limpopo", stay: "Multi-night stay", drives: "Operated by your lodge or SANParks", transport: "Flight from Cape Town; RA2 arranges connections" },
-  { name: "Sabi Sands", where: "Private reserve bordering Kruger", stay: "Multi-night lodge stay", drives: "Operated by your lodge's rangers", transport: "Flight plus lodge transfer; RA2 coordinates" },
-];
-
 function Page() {
+  const safaris = useSuspenseQuery({
+    ...publicPackagesOptions,
+    initialData: Route.useLoaderData(),
+  }).data.filter((p) => p.package_type === "safari" && p.show_on_category_page);
   return (
     <>
-      <PageHero eyebrow="Safaris" title="Three very different safaris." intro="Each option has its own location, travel and stay. Here's how they compare." image={hero} />
+      <PageHero
+        eyebrow="Safaris"
+        title="Find your kind of wild."
+        intro="Each safari has its own location, travel and stay. Explore the options and let us arrange your journey."
+        image={hero}
+      />
       <section className="py-20">
         <div className="container-site grid gap-6 md:grid-cols-3">
-          {S.map((s) => (
-            <article key={s.name} className="rounded-md bg-card p-8 ring-1 ring-border">
-              <h2 className="text-4xl">{s.name}</h2>
-              <dl className="mt-6 space-y-4 text-sm">
-                {[["Where", s.where], ["Stay", s.stay], ["Game drives", s.drives], ["Transport", s.transport]].map(([k, v]) => (
-                  <div key={k}><dt className="eyebrow">{k}</dt><dd className="mt-1 text-base">{v}</dd></div>
-                ))}
-              </dl>
-            </article>
+          {safaris.map((s) => (
+            <TourCardView key={s.id} tour={s} />
           ))}
+          {!safaris.length && (
+            <p className="text-muted-foreground md:col-span-3">
+              We’re updating our safari options. Contact us to plan your stay.
+            </p>
+          )}
         </div>
-        <p className="container-site mt-8 text-sm text-muted-foreground">Wildlife sightings cannot be guaranteed. Lodges, prices and availability are confirmed with your quote.</p>
+        <p className="container-site mt-8 text-sm text-muted-foreground">
+          Wildlife sightings cannot be guaranteed. Lodges, prices and availability are confirmed
+          with your quote.
+        </p>
       </section>
       <CtaBand />
     </>

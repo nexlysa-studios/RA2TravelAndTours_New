@@ -59,6 +59,24 @@ Deno.serve(async (req) => {
       p_data: booking,
     });
     if (error) {
+      if (
+        error.message.includes("PACKAGE_UNAVAILABLE") ||
+        error.message.includes("PACKAGE_CHANGED")
+      )
+        return json(
+          {
+            error:
+              "This package has changed or is no longer available. Refresh the page to choose a current experience, or contact RA2 directly.",
+          },
+          409,
+          cors,
+        );
+      if (error.message.includes("TRANSFER_DETAILS_REQUIRED"))
+        return json(
+          { error: "Please add your pickup, drop-off and pickup time for this transfer." },
+          400,
+          cors,
+        );
       if (error.message.includes("REQUEST_CONFLICT"))
         return json(
           {

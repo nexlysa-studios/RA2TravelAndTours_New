@@ -17,6 +17,15 @@ export type Booking = {
   created_at: string;
   updated_at: string;
   experience: string;
+  package_id: string | null;
+  package_type: string | null;
+  package_snapshot: {
+    name: string;
+    duration: string;
+    included: string[];
+    excluded: string[];
+    booking_terms: string;
+  } | null;
   travel_date: string | null;
   flexible_dates: boolean;
   adults: number;

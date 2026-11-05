@@ -1,4 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { publicPackagesOptions } from "@/lib/packages";
+import { TourCardView } from "@/components/site/TourCardView";
 import hero from "@/assets/hero.jpg";
 import sedan from "@/assets/Fleet (9).JPG";
 import mercedesC180 from "@/assets/Fleet (2).JPG";
@@ -14,6 +17,7 @@ import { CONTACT } from "@/lib/site";
 import { GoldButton, PageHero } from "@/components/site/SiteChrome";
 
 export const Route = createFileRoute("/transfers")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(publicPackagesOptions),
   head: () => ({
     meta: [
       { title: "Our Fleet — Transfers & Chauffeur Service | RA2 Travel and Tours" },
@@ -96,6 +100,11 @@ const FLEET = [
 ];
 
 function Page() {
+  const packages = useSuspenseQuery({
+    ...publicPackagesOptions,
+    initialData: Route.useLoaderData(),
+  }).data.filter((p) => p.package_type === "transfer" && p.show_on_category_page);
+  const primary = packages[0];
   return (
     <>
       <PageHero
@@ -104,8 +113,29 @@ function Page() {
         intro="From a private sedan to a spacious group vehicle, explore the fleet for your Cape Town transfer or journey."
         image={hero}
       >
-        <GoldButton to="/plan-my-trip">Request a Transfer Quote</GoldButton>
+        {primary && (
+          <Link
+            to="/plan-my-trip"
+            search={{ package: primary.id, experience: primary.name }}
+            className="rounded-lg bg-gold px-6 py-3 text-sm font-semibold text-forest-deep hover:bg-ivory"
+          >
+            {primary.cta_label || "Request a Transfer Quote"}
+          </Link>
+        )}
       </PageHero>
+      {packages.length > 0 && (
+        <section className="py-14">
+          <div className="container-site">
+            <p className="eyebrow mb-3">Travel your way</p>
+            <h2 className="mb-8 text-4xl">Your private transfer.</h2>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {packages.map((pkg) => (
+                <TourCardView key={pkg.id} tour={pkg} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
       <section id="fleet" className="scroll-mt-24 py-20">
         <div className="container-site">
           <div className="mb-12 max-w-2xl">
@@ -154,7 +184,15 @@ function Page() {
             Share your travel date, passenger count and luggage details for a tailored quote.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <GoldButton to="/plan-my-trip">Request a Quote</GoldButton>
+            {primary && (
+              <Link
+                to="/plan-my-trip"
+                search={{ package: primary.id, experience: primary.name }}
+                className="rounded-lg bg-gold px-6 py-3 text-sm font-semibold text-forest-deep hover:bg-ivory"
+              >
+                {primary.cta_label || "Request a Quote"}
+              </Link>
+            )}
             <GoldButton href={CONTACT.whatsapp} variant="outline">
               WhatsApp {CONTACT.phone}
             </GoldButton>

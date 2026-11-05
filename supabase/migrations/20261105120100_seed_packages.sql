@@ -1,0 +1,746 @@
+-- Initial editable catalogue. Existing admin edits are never overwritten on conflict.
+insert into public.packages (id, name, slug, package_type, subtitle, tagline, summary, description, overview_title, overview_text, location, duration, badge, image_key, image_url, image_alt, categories, facts, highlights, itinerary, itinerary_note, included, excluded, customisation_intro, customisation_options, before_you_go, booking_terms, faqs, cta_title, cta_text, cta_label, seo_title, seo_description, is_published, show_in_tours, show_on_category_page, featured, sort_order)
+select id, name, slug, package_type, subtitle, tagline, summary, description, overview_title, overview_text, location, duration, badge, image_key, image_url, image_alt, categories, facts, highlights, itinerary, itinerary_note, included, excluded, customisation_intro, customisation_options, before_you_go, booking_terms, faqs, cta_title, cta_text, cta_label, seo_title, seo_description, is_published, show_in_tours, show_on_category_page, featured, sort_order from jsonb_populate_recordset(null::public.packages,
+$package_seed$[
+  {
+    "id": "00000000-0000-4000-8000-000000000001",
+    "name": "Private Cape Peninsula Tour",
+    "slug": "peninsula",
+    "package_type": "tour",
+    "subtitle": "Penguins & Coastal Wonders",
+    "tagline": "Spectacular coastal drives. Iconic Cape Point. Unforgettable penguin encounters.",
+    "summary": "Spectacular coastal drives, Cape Point and the African penguins at Boulders, with your own guide and the main entrance fees included.",
+    "description": "Discover the Cape Peninsula with your own local guide and private vehicle. From the Atlantic coastline and dramatic bends of Chapman’s Peak to Cape Point and the African penguins at Boulders, enjoy a day of remarkable scenery, local stories and memorable stops.\n\nWith RA2 Travel and Tours, your journey is personally arranged, with accommodation pickup, the main entrance fees included and a comfortable pace.",
+    "overview_title": "The Peninsula, personally explored",
+    "overview_text": "Let us take care of the driving while you enjoy one of the Cape’s most scenic journeys.\n\nTravel past beaches and mountain slopes, pause at coastal viewpoints and discover the landscapes of Cape Point and the Cape of Good Hope. Spend time watching African penguins from the designated viewing areas at Boulders before returning to Cape Town.\n\nYour guide brings the route to life through local knowledge and conversation, with time to appreciate the places you came to see.",
+    "location": "Cape Peninsula · Cape Town pickup",
+    "duration": "Approximately 8–9 hours",
+    "badge": "Private guided day tour",
+    "image_key": "peninsula",
+    "image_url": "",
+    "image_alt": "Chapman’s Peak Drive and the Cape Peninsula coastline",
+    "categories": [
+      "Coast",
+      "Adventure"
+    ],
+    "facts": [
+      {
+        "label": "Experience",
+        "value": "Private guided Cape Peninsula day tour"
+      },
+      {
+        "label": "Duration",
+        "value": "Approximately 8–9 hours"
+      },
+      {
+        "label": "Suggested departure",
+        "value": "08:00; confirmed when booking"
+      },
+      {
+        "label": "Pickup and return",
+        "value": "Your accommodation within the agreed Cape Town pickup area"
+      },
+      {
+        "label": "Transport",
+        "value": "Private vehicle selected for your group"
+      },
+      {
+        "label": "Entrance fees",
+        "value": "Cape Point / Cape of Good Hope and Boulders penguin viewing included"
+      },
+      {
+        "label": "Lunch",
+        "value": "Restaurant stop; meal for your own account"
+      },
+      {
+        "label": "Price",
+        "value": "Personalised quotation"
+      }
+    ],
+    "highlights": [
+      "Scenic Atlantic coastline drive.",
+      "Camps Bay and Twelve Apostles photograph stop.",
+      "Hout Bay harbour or viewpoint stop.",
+      "Chapman’s Peak Drive and a designated viewpoint stop.",
+      "Cape Point coastal scenery and viewpoints.",
+      "Cape of Good Hope photograph stop.",
+      "Lunch stop along the route.",
+      "African penguin viewing at Boulders.",
+      "A short introduction to Simon’s Town.",
+      "Private accommodation pickup and return."
+    ],
+    "itinerary": [
+      {
+        "title": "A warm RA2 welcome",
+        "label": "Stop 1",
+        "body": "Your guide collects you from your accommodation at the confirmed time. After a short introduction to the day’s route, settle into your private vehicle and begin your Peninsula journey.\n\nTell us about any particular interests, dietary requirements or walking considerations when booking so we can prepare your day."
+      },
+      {
+        "title": "Camps Bay & the Atlantic coastline",
+        "label": "Stop 2",
+        "body": "Enjoy a scenic drive towards Camps Bay, where the beach and Twelve Apostles mountain backdrop provide a beautiful introduction to the coast.\n\nPause at a suitable viewpoint for photographs before continuing towards Hout Bay."
+      },
+      {
+        "title": "Hout Bay",
+        "label": "Stop 3",
+        "body": "Take in the setting of Hout Bay, framed by mountains and the Atlantic Ocean.\n\nEnjoy a short harbour or viewpoint stop before the next stretch of your coastal drive. A boat excursion can be requested in advance as a customised addition, with the itinerary adjusted accordingly."
+      },
+      {
+        "title": "Chapman’s Peak Drive",
+        "label": "Stop 4",
+        "body": "Follow the curves of Chapman’s Peak, with sweeping views across the bay and coastline.\n\nWhen the road is open and conditions allow, stop at a designated viewpoint to enjoy the scenery and capture photographs."
+      },
+      {
+        "title": "Cape Point & the Cape of Good Hope",
+        "label": "Stop 5",
+        "body": "Explore the dramatic landscapes of the Cape of Good Hope section of Table Mountain National Park.\n\nVisit the Cape of Good Hope photograph stop and enjoy time at Cape Point’s viewpoints. Guests comfortable with an uphill walk can follow the route towards the old lighthouse area.\n\nThe Flying Dutchman funicular is an optional extra, subject to operation. Your guide will explain the available options and help you choose a suitable way to explore."
+      },
+      {
+        "title": "Time for lunch",
+        "label": "Stop 6",
+        "body": "Pause for lunch at a suitable restaurant along the route.\n\nEnjoy time to relax before continuing your tour. Lunch and drinks are for your own account, giving you the freedom to choose your preferred meal.\n\nPlease share dietary requirements when enquiring so we can recommend a suitable stop."
+      },
+      {
+        "title": "Boulders penguin viewing",
+        "label": "Stop 7",
+        "body": "Visit the African penguin colony near Simon’s Town and watch these distinctive birds from the designated visitor areas and boardwalks.\n\nEnjoy time for photographs while respecting the penguins’ space and protected habitat.\n\nPenguin-viewing admission is included in your tour."
+      },
+      {
+        "title": "Simon’s Town & your return",
+        "label": "Stop 8",
+        "body": "Enjoy a short introduction to Simon’s Town before travelling back to Cape Town.\n\nIf the day’s timing allows, a brief additional coastal stop may be possible. Your guide will balance extra stops with a comfortable return to your accommodation."
+      }
+    ],
+    "itinerary_note": "The order of stops may change according to traffic, weather, road access and attraction operations.",
+    "included": [
+      "Private return transport from your agreed Cape Town pickup location.",
+      "Services of a registered tourist guide.",
+      "Fuel and parking for the standard itinerary.",
+      "Chapman’s Peak toll when travelling this route.",
+      "Cape Point / Cape of Good Hope entrance fee.",
+      "Boulders penguin-viewing entrance fee.",
+      "Bottled water.",
+      "Assistance with planning your day and lunch stop."
+    ],
+    "excluded": [
+      "Lunch, additional drinks and refreshments.",
+      "Flying Dutchman funicular tickets.",
+      "Hout Bay boat excursions.",
+      "Additional activities outside the confirmed itinerary.",
+      "Personal purchases and optional gratuities.",
+      "Pickups outside the agreed area, unless included in your quotation."
+    ],
+    "customisation_intro": "Travelling as a couple, family or private group? We will recommend a vehicle suited to your passenger numbers and comfort preferences.\n\nAll additions are subject to availability and confirmed in your quotation.",
+    "customisation_options": [
+      "A luxury vehicle upgrade.",
+      "A pre-arranged restaurant reservation.",
+      "A Hout Bay boat excursion with adjusted touring time.",
+      "A gentler itinerary with reduced walking."
+    ],
+    "before_you_go": "Bring comfortable walking shoes, a light jacket, sun protection, your camera and any personal essentials.\n\nPlease advise us in advance about mobility needs, children travelling with you or child-seat requirements. Some viewpoints and walking routes involve slopes or steps.\n\nHave your passport or South African identification available, as applicable admission categories may require supporting identification.",
+    "booking_terms": "Once you accept your quotation, a 50% deposit confirms your booking, subject to availability. Full payment is required before the tour.\n\nQuotations are valid for seven days. Cancellation charges apply according to the terms supplied with your quotation.",
+    "faqs": [
+      {
+        "question": "Is this a private tour?",
+        "answer": "Yes. Your vehicle and guide are reserved for your booking. You will not be combined with unrelated guests in the RA2 touring vehicle."
+      },
+      {
+        "question": "Are the main entrance fees included?",
+        "answer": "Yes. The standard package includes Cape Point / Cape of Good Hope admission and Boulders penguin-viewing admission.\n\nThe Flying Dutchman funicular and optional boat excursions are additional."
+      },
+      {
+        "question": "Is lunch included?",
+        "answer": "Lunch is for your own account. We allow time for a restaurant stop and can help arrange a suitable reservation."
+      },
+      {
+        "question": "Do you collect us from our hotel?",
+        "answer": "Yes. Pickup and return within the agreed Cape Town area are included. Please provide your accommodation name or address when enquiring.\n\nPickups outside this area can be quoted separately."
+      },
+      {
+        "question": "Is the tour suitable for families?",
+        "answer": "The itinerary can be adapted for families. Please tell us the children’s ages and any child-seat requirements so we can recommend the vehicle and pace."
+      },
+      {
+        "question": "How much walking is involved?",
+        "answer": "There are short walks at several stops, with additional walking available at Cape Point. Please discuss mobility considerations with us before booking so we can explain the route and suitable options."
+      },
+      {
+        "question": "What happens if Chapman’s Peak is closed?",
+        "answer": "Your guide will use an alternative route and adjust the day’s itinerary around road access and operating conditions."
+      },
+      {
+        "question": "Can we change the itinerary?",
+        "answer": "Yes. Tell us your priorities when enquiring. We will explain what fits comfortably into the day and quote any additional time or activities."
+      },
+      {
+        "question": "How do we confirm our booking?",
+        "answer": "Once you accept your quotation, a 50% deposit confirms your booking, subject to availability. Full payment is required before the tour.\n\nQuotations are valid for seven days. Cancellation charges apply according to the terms supplied with your quotation."
+      }
+    ],
+    "cta_title": "Your Peninsula journey starts here",
+    "cta_text": "Experience the Cape Peninsula with local knowledge, personal attention and your own private guide.\n\nSend us your travel date, group size and accommodation details, and we will prepare your personalised quotation.",
+    "cta_label": "Get My Peninsula Tour Quote",
+    "seo_title": "Private Cape Peninsula Tour | Penguins & Coastal Wonders | RA2",
+    "seo_description": "Explore Cape Point, Chapman’s Peak and Boulders penguins with your own local guide. Private Cape Town pickup and the main entrance fees included. Request a quote.",
+    "is_published": true,
+    "show_in_tours": true,
+    "show_on_category_page": true,
+    "featured": true,
+    "sort_order": 10
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000002",
+    "name": "Private Cape Winelands Tour",
+    "slug": "winelands",
+    "package_type": "tour",
+    "subtitle": "",
+    "tagline": "",
+    "summary": "Historic estates, mountain valleys and tastings chosen around you.",
+    "description": "Discover Stellenbosch and Franschhoek with your own private guide. Tell us your interests and we will prepare a personalised route, with tastings, stops and inclusions confirmed in your quotation.",
+    "overview_title": "",
+    "overview_text": "",
+    "location": "Stellenbosch & Franschhoek",
+    "duration": "Approximately 7–8 hours",
+    "badge": "Private",
+    "image_key": "winelands",
+    "image_url": "",
+    "image_alt": "Cape Winelands vineyards and mountains",
+    "categories": [
+      "Wine"
+    ],
+    "facts": [],
+    "highlights": [],
+    "itinerary": [],
+    "itinerary_note": "",
+    "included": [],
+    "excluded": [],
+    "customisation_intro": "",
+    "customisation_options": [],
+    "before_you_go": "",
+    "booking_terms": "",
+    "faqs": [],
+    "cta_title": "",
+    "cta_text": "",
+    "cta_label": "Request a Quote",
+    "seo_title": "",
+    "seo_description": "",
+    "is_published": true,
+    "show_in_tours": true,
+    "show_on_category_page": true,
+    "featured": true,
+    "sort_order": 20
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000003",
+    "name": "City & Table Mountain",
+    "slug": "city-table-mountain",
+    "package_type": "tour",
+    "subtitle": "",
+    "tagline": "",
+    "summary": "The Mother City’s neighbourhoods, history and mountain views.",
+    "description": "Explore Cape Town’s neighbourhoods and history with your own guide. Table Mountain access, weather-dependent activities and itinerary inclusions are confirmed when we prepare your personalised quote.",
+    "overview_title": "",
+    "overview_text": "",
+    "location": "Cape Town",
+    "duration": "Approximately 5–6 hours",
+    "badge": "Private",
+    "image_key": "hero",
+    "image_url": "",
+    "image_alt": "Cape Town coastline",
+    "categories": [
+      "City"
+    ],
+    "facts": [],
+    "highlights": [],
+    "itinerary": [],
+    "itinerary_note": "",
+    "included": [],
+    "excluded": [],
+    "customisation_intro": "",
+    "customisation_options": [],
+    "before_you_go": "",
+    "booking_terms": "",
+    "faqs": [],
+    "cta_title": "",
+    "cta_text": "",
+    "cta_label": "Request a Quote",
+    "seo_title": "",
+    "seo_description": "",
+    "is_published": true,
+    "show_in_tours": true,
+    "show_on_category_page": true,
+    "featured": false,
+    "sort_order": 30
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000004",
+    "name": "Aquila Safari Day",
+    "slug": "aquila",
+    "package_type": "safari",
+    "subtitle": "",
+    "tagline": "",
+    "summary": "A Big Five reserve within driving distance of Cape Town.",
+    "description": "Visit Aquila near Touws River with a private road transfer from Cape Town. Game drives are run by the reserve. Day-trip and overnight options, availability, prices and inclusions are confirmed in your quotation. Wildlife sightings cannot be guaranteed.",
+    "overview_title": "",
+    "overview_text": "",
+    "location": "Touws River, Western Cape",
+    "duration": "Full day / overnight by arrangement",
+    "badge": "Private transfer",
+    "image_key": "safari",
+    "image_url": "",
+    "image_alt": "Elephants in the South African bushveld",
+    "categories": [
+      "Wildlife"
+    ],
+    "facts": [
+      {
+        "label": "Where",
+        "value": "Touws River, Western Cape · approximately 2 hours from Cape Town"
+      },
+      {
+        "label": "Stay",
+        "value": "Day trip or overnight"
+      },
+      {
+        "label": "Game drives",
+        "value": "Operated by the reserve"
+      },
+      {
+        "label": "Transport",
+        "value": "RA2 private road transfer from Cape Town"
+      }
+    ],
+    "highlights": [],
+    "itinerary": [],
+    "itinerary_note": "",
+    "included": [],
+    "excluded": [],
+    "customisation_intro": "",
+    "customisation_options": [],
+    "before_you_go": "",
+    "booking_terms": "",
+    "faqs": [],
+    "cta_title": "",
+    "cta_text": "",
+    "cta_label": "Request a Quote",
+    "seo_title": "",
+    "seo_description": "",
+    "is_published": true,
+    "show_in_tours": true,
+    "show_on_category_page": true,
+    "featured": false,
+    "sort_order": 40
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000005",
+    "name": "Tailor-made Journey",
+    "slug": "tailor-made-journey",
+    "package_type": "journey",
+    "subtitle": "",
+    "tagline": "",
+    "summary": "A journey designed around you.",
+    "description": "Share your travel dates, interests and group size. We will prepare a personal proposal with routes, stays and inclusions confirmed before you book.",
+    "overview_title": "",
+    "overview_text": "",
+    "location": "South Africa",
+    "duration": "Tailored to your plans",
+    "badge": "Private",
+    "image_key": "winelands",
+    "image_url": "",
+    "image_alt": "",
+    "categories": [
+      "Adventure"
+    ],
+    "facts": [],
+    "highlights": [],
+    "itinerary": [],
+    "itinerary_note": "",
+    "included": [],
+    "excluded": [],
+    "customisation_intro": "",
+    "customisation_options": [],
+    "before_you_go": "",
+    "booking_terms": "",
+    "faqs": [],
+    "cta_title": "",
+    "cta_text": "",
+    "cta_label": "Request a Quote",
+    "seo_title": "",
+    "seo_description": "",
+    "is_published": true,
+    "show_in_tours": false,
+    "show_on_category_page": false,
+    "featured": false,
+    "sort_order": 50
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000006",
+    "name": "Safari (Kruger / Sabi Sands)",
+    "slug": "kruger-sabi-sands",
+    "package_type": "safari",
+    "subtitle": "",
+    "tagline": "",
+    "summary": "An unforgettable bush experience.",
+    "description": "Tell us about your preferred dates and lodge experience. We will explain Kruger and Sabi Sands options and coordinate the travel arrangements, with prices and inclusions confirmed in your quotation. Wildlife sightings cannot be guaranteed.",
+    "overview_title": "",
+    "overview_text": "",
+    "location": "Kruger & Sabi Sands",
+    "duration": "Multi-night stay",
+    "badge": "Private",
+    "image_key": "safari",
+    "image_url": "",
+    "image_alt": "",
+    "categories": [
+      "Wildlife"
+    ],
+    "facts": [],
+    "highlights": [],
+    "itinerary": [],
+    "itinerary_note": "",
+    "included": [],
+    "excluded": [],
+    "customisation_intro": "",
+    "customisation_options": [],
+    "before_you_go": "",
+    "booking_terms": "",
+    "faqs": [],
+    "cta_title": "",
+    "cta_text": "",
+    "cta_label": "Request a Quote",
+    "seo_title": "",
+    "seo_description": "",
+    "is_published": true,
+    "show_in_tours": false,
+    "show_on_category_page": false,
+    "featured": false,
+    "sort_order": 60
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000007",
+    "name": "Transfer / Chauffeur",
+    "slug": "transfers-chauffeur",
+    "package_type": "transfer",
+    "subtitle": "",
+    "tagline": "",
+    "summary": "Airport, private and group transport.",
+    "description": "Arrange a private transfer or chauffeur service with RA2. Share your pickup and drop-off locations, travel time, passenger count and luggage so we can recommend a suitable vehicle and prepare your quote.",
+    "overview_title": "",
+    "overview_text": "",
+    "location": "Cape Town and agreed routes",
+    "duration": "Route dependent",
+    "badge": "Private",
+    "image_key": "hero",
+    "image_url": "",
+    "image_alt": "",
+    "categories": [],
+    "facts": [],
+    "highlights": [],
+    "itinerary": [],
+    "itinerary_note": "",
+    "included": [],
+    "excluded": [],
+    "customisation_intro": "",
+    "customisation_options": [],
+    "before_you_go": "",
+    "booking_terms": "",
+    "faqs": [],
+    "cta_title": "",
+    "cta_text": "",
+    "cta_label": "Request a Quote",
+    "seo_title": "",
+    "seo_description": "",
+    "is_published": true,
+    "show_in_tours": false,
+    "show_on_category_page": false,
+    "featured": false,
+    "sort_order": 70
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000008",
+    "name": "Not sure yet",
+    "slug": "help-me-plan",
+    "package_type": "consultation",
+    "subtitle": "",
+    "tagline": "",
+    "summary": "Let us help you find your adventure.",
+    "description": "Share a few details about your trip and the RA2 team will help you choose a suitable tour, safari, transfer or tailor-made journey.",
+    "overview_title": "",
+    "overview_text": "",
+    "location": "South Africa",
+    "duration": "To be arranged",
+    "badge": "Private",
+    "image_key": "hero",
+    "image_url": "",
+    "image_alt": "",
+    "categories": [],
+    "facts": [],
+    "highlights": [],
+    "itinerary": [],
+    "itinerary_note": "",
+    "included": [],
+    "excluded": [],
+    "customisation_intro": "",
+    "customisation_options": [],
+    "before_you_go": "",
+    "booking_terms": "",
+    "faqs": [],
+    "cta_title": "",
+    "cta_text": "",
+    "cta_label": "Request a Quote",
+    "seo_title": "",
+    "seo_description": "",
+    "is_published": true,
+    "show_in_tours": false,
+    "show_on_category_page": false,
+    "featured": false,
+    "sort_order": 80
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000009",
+    "name": "Kruger Safari",
+    "slug": "kruger",
+    "package_type": "safari",
+    "subtitle": "",
+    "tagline": "",
+    "summary": "A multi-night wildlife stay in Mpumalanga and Limpopo.",
+    "description": "Explore Kruger with game drives operated by your lodge or SANParks. Travel from Cape Town involves a flight; RA2 arranges connections. Lodges, prices and availability are confirmed with your quote. Wildlife sightings cannot be guaranteed.",
+    "overview_title": "",
+    "overview_text": "",
+    "location": "Mpumalanga & Limpopo",
+    "duration": "Multi-night stay",
+    "badge": "Private",
+    "image_key": "safari",
+    "image_url": "",
+    "image_alt": "",
+    "categories": [
+      "Wildlife"
+    ],
+    "facts": [
+      {
+        "label": "Where",
+        "value": "Mpumalanga & Limpopo"
+      },
+      {
+        "label": "Stay",
+        "value": "Multi-night stay"
+      },
+      {
+        "label": "Game drives",
+        "value": "Operated by your lodge or SANParks"
+      },
+      {
+        "label": "Transport",
+        "value": "Flight from Cape Town; RA2 arranges connections"
+      }
+    ],
+    "highlights": [],
+    "itinerary": [],
+    "itinerary_note": "",
+    "included": [],
+    "excluded": [],
+    "customisation_intro": "",
+    "customisation_options": [],
+    "before_you_go": "",
+    "booking_terms": "",
+    "faqs": [],
+    "cta_title": "",
+    "cta_text": "",
+    "cta_label": "Request a Quote",
+    "seo_title": "",
+    "seo_description": "",
+    "is_published": true,
+    "show_in_tours": false,
+    "show_on_category_page": true,
+    "featured": false,
+    "sort_order": 90
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000010",
+    "name": "Sabi Sands Safari",
+    "slug": "sabi-sands",
+    "package_type": "safari",
+    "subtitle": "",
+    "tagline": "",
+    "summary": "A private lodge stay beside the Kruger National Park.",
+    "description": "Plan a stay in Sabi Sands, a private reserve bordering Kruger. Game drives are operated by your lodge’s rangers. RA2 coordinates flights and lodge transfers. Lodges, prices and availability are confirmed with your quote. Wildlife sightings cannot be guaranteed.",
+    "overview_title": "",
+    "overview_text": "",
+    "location": "Sabi Sands, bordering Kruger",
+    "duration": "Multi-night lodge stay",
+    "badge": "Private",
+    "image_key": "safari",
+    "image_url": "",
+    "image_alt": "",
+    "categories": [
+      "Wildlife"
+    ],
+    "facts": [
+      {
+        "label": "Where",
+        "value": "Private reserve bordering Kruger"
+      },
+      {
+        "label": "Stay",
+        "value": "Multi-night lodge stay"
+      },
+      {
+        "label": "Game drives",
+        "value": "Operated by your lodge’s rangers"
+      },
+      {
+        "label": "Transport",
+        "value": "Flight plus lodge transfer; RA2 coordinates"
+      }
+    ],
+    "highlights": [],
+    "itinerary": [],
+    "itinerary_note": "",
+    "included": [],
+    "excluded": [],
+    "customisation_intro": "",
+    "customisation_options": [],
+    "before_you_go": "",
+    "booking_terms": "",
+    "faqs": [],
+    "cta_title": "",
+    "cta_text": "",
+    "cta_label": "Request a Quote",
+    "seo_title": "",
+    "seo_description": "",
+    "is_published": true,
+    "show_in_tours": false,
+    "show_on_category_page": true,
+    "featured": false,
+    "sort_order": 100
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000011",
+    "name": "Cape Town & Coast",
+    "slug": "cape-town-coast",
+    "package_type": "journey",
+    "subtitle": "",
+    "tagline": "",
+    "summary": "Iconic cities, coastal drives and world-class scenery.",
+    "description": "A sample journey combining Cape Town with its coast. Routes, stays and inclusions are confirmed in your personal proposal.",
+    "overview_title": "",
+    "overview_text": "",
+    "location": "Cape Town & coast",
+    "duration": "Example: 5–7 nights",
+    "badge": "Private",
+    "image_key": "hero",
+    "image_url": "",
+    "image_alt": "",
+    "categories": [
+      "Coast",
+      "City"
+    ],
+    "facts": [],
+    "highlights": [],
+    "itinerary": [],
+    "itinerary_note": "",
+    "included": [],
+    "excluded": [],
+    "customisation_intro": "",
+    "customisation_options": [],
+    "before_you_go": "",
+    "booking_terms": "",
+    "faqs": [],
+    "cta_title": "",
+    "cta_text": "",
+    "cta_label": "Request a Quote",
+    "seo_title": "",
+    "seo_description": "",
+    "is_published": true,
+    "show_in_tours": false,
+    "show_on_category_page": true,
+    "featured": false,
+    "sort_order": 110
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000012",
+    "name": "Garden Route",
+    "slug": "garden-route",
+    "package_type": "journey",
+    "subtitle": "",
+    "tagline": "",
+    "summary": "Forests, lagoons and seaside towns between Mossel Bay and Plettenberg Bay.",
+    "description": "A sample journey along the Garden Route. Routes, stays and inclusions are confirmed in your personal proposal.",
+    "overview_title": "",
+    "overview_text": "",
+    "location": "Garden Route",
+    "duration": "Example: 7–10 nights",
+    "badge": "Private",
+    "image_key": "winelands",
+    "image_url": "",
+    "image_alt": "",
+    "categories": [
+      "Adventure",
+      "Coast"
+    ],
+    "facts": [],
+    "highlights": [],
+    "itinerary": [],
+    "itinerary_note": "",
+    "included": [],
+    "excluded": [],
+    "customisation_intro": "",
+    "customisation_options": [],
+    "before_you_go": "",
+    "booking_terms": "",
+    "faqs": [],
+    "cta_title": "",
+    "cta_text": "",
+    "cta_label": "Request a Quote",
+    "seo_title": "",
+    "seo_description": "",
+    "is_published": true,
+    "show_in_tours": false,
+    "show_on_category_page": true,
+    "featured": false,
+    "sort_order": 120
+  },
+  {
+    "id": "00000000-0000-4000-8000-000000000013",
+    "name": "Cape & Safari",
+    "slug": "cape-safari",
+    "package_type": "journey",
+    "subtitle": "",
+    "tagline": "",
+    "summary": "Combine Cape Town with a lodge stay in a Big Five reserve.",
+    "description": "A sample journey pairing Cape Town with a safari lodge stay. Routes, stays and inclusions are confirmed in your personal proposal. Wildlife sightings cannot be guaranteed.",
+    "overview_title": "",
+    "overview_text": "",
+    "location": "Cape Town & safari reserve",
+    "duration": "Example: 8–12 nights",
+    "badge": "Private",
+    "image_key": "safari",
+    "image_url": "",
+    "image_alt": "",
+    "categories": [
+      "Wildlife",
+      "City"
+    ],
+    "facts": [],
+    "highlights": [],
+    "itinerary": [],
+    "itinerary_note": "",
+    "included": [],
+    "excluded": [],
+    "customisation_intro": "",
+    "customisation_options": [],
+    "before_you_go": "",
+    "booking_terms": "",
+    "faqs": [],
+    "cta_title": "",
+    "cta_text": "",
+    "cta_label": "Request a Quote",
+    "seo_title": "",
+    "seo_description": "",
+    "is_published": true,
+    "show_in_tours": false,
+    "show_on_category_page": true,
+    "featured": false,
+    "sort_order": 130
+  }
+]$package_seed$::jsonb)
+on conflict (id) do nothing;

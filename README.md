@@ -23,9 +23,17 @@ The browser connection in `src/lib/supabase-public.ts` contains the project URL 
 3. Provide contact information and contact preference.
 4. Review, edit sections, consent and submit.
 
-The `create-booking` Edge Function validates the same schema as the form, applies persistent rate limits and saves the booking plus two email jobs in one database transaction. A request UUID makes retries idempotent. Guests cannot read, insert or update tables directly. A saved request receives a unique `RA2-…` reference; it is not a paid or confirmed trip.
+The `create-booking` Edge Function validates the same schema as the form, applies persistent rate limits and saves the booking plus two email jobs in one database transaction. A request UUID makes retries idempotent. Guests cannot read, insert or update booking or staff tables directly; they can read published packages. A saved request receives a unique `RA2-…` reference; it is not a paid or confirmed trip.
 
 The desktop summary stays alongside the form as the guest scrolls. Mobile has a collapsible summary. Guest details are held in memory while completing the form, not saved in browser storage.
+
+## Editable packages
+
+Open **Admin → Packages** to manage the Supabase catalogue. The existing tours, safari choices, journey examples and transfer experience are seeded in `public.packages`. The supplied Peninsula page includes its updated admission inclusions, eight itinerary stops and nine FAQs. Public cards, detail pages and booking choices read the published catalogue; drafts remain private.
+
+Admins can create packages, edit content and FAQs, reorder itinerary stops, upload photos, preview changes and publish/pause offerings. Every published package can receive a booking request, and new requests retain a stable package ID, canonical type and snapshot of the package details. Existing bookings are preserved. Transfer validation follows the package type rather than an editable title.
+
+See [the package editing guide](docs/PACKAGES.md) for the owner's step-by-step instructions. Package management does not change email secrets or the current notification inbox.
 
 ## Staff and database access
 

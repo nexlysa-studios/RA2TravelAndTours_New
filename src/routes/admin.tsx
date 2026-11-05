@@ -18,10 +18,12 @@ import {
   Search,
   ShieldCheck,
   Users,
+  PackageOpen,
 } from "lucide-react";
 import { AdminLogin } from "@/components/admin/AdminLogin";
 import { BookingDetails } from "@/components/admin/BookingDetails";
 import { TeamPanel, AccountSettings } from "@/components/admin/TeamPanel";
+import { PackagesPanel } from "@/components/admin/PackagesPanel";
 import { useAdminSession } from "@/hooks/use-admin-session";
 import {
   BOOKING_STATUSES,
@@ -103,7 +105,8 @@ function Dashboard({ userId, email }: { userId: string; email: string }) {
   const { booking: linkedBooking } = Route.useSearch();
   const navigate = Route.useNavigate();
   const queryClient = useQueryClient();
-  const [tab, setTab] = useState<"bookings" | "team">("bookings");
+  const [tab, setTab] = useState<"bookings" | "packages" | "team">("bookings");
+  const [packageDirty, setPackageDirty] = useState(false);
   const [search, setSearch] = useState("");
   const searchValue = useDeferredValue(search);
   const [status, setStatus] = useState("all");
@@ -197,6 +200,10 @@ function Dashboard({ userId, email }: { userId: string; email: string }) {
       .on("postgres_changes", { event: "*", schema: "public", table: "user_roles" }, () => {
         void queryClient.invalidateQueries({ queryKey: ["admin-team"] });
       })
+      .on("postgres_changes", { event: "*", schema: "public", table: "packages" }, () => {
+        void queryClient.invalidateQueries({ queryKey: ["admin-packages"] });
+        void queryClient.invalidateQueries({ queryKey: ["public-packages"] });
+      })
       .subscribe();
     return () => {
       void db.removeChannel(channel);
@@ -208,6 +215,12 @@ function Dashboard({ userId, email }: { userId: string; email: string }) {
     void queryClient.invalidateQueries({ queryKey: ["admin-email-config"] });
   };
   async function signOut() {
+    if (
+      tab === "packages" &&
+      packageDirty &&
+      !window.confirm("Sign out without saving your package changes?")
+    )
+      return;
     const { error } = await getSupabase().auth.signOut();
     if (error) setSignOutError("Unable to sign out. Please try again.");
   }
@@ -237,13 +250,23 @@ function Dashboard({ userId, email }: { userId: string; email: string }) {
       {(
         [
           ["bookings", ClipboardList, "Bookings"],
+          ["packages", PackageOpen, "Packages"],
           ["team", Users, "Team & account"],
         ] as const
       ).map(([key, Icon, title]) => (
         <button
           key={key}
-          className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition-colors ${tab === key ? "bg-ivory/10 text-gold" : "text-ivory/70 hover:bg-ivory/5 hover:text-ivory"}`}
-          onClick={() => setTab(key)}
+          className={`flex shrink-0 items-center gap-3 rounded-lg px-4 py-3 text-sm transition-colors ${tab === key ? "bg-ivory/10 text-gold" : "text-ivory/70 hover:bg-ivory/5 hover:text-ivory"}`}
+          onClick={() => {
+            if (
+              tab === "packages" &&
+              packageDirty &&
+              key !== tab &&
+              !window.confirm("Leave Packages without saving your changes?")
+            )
+              return;
+            setTab(key);
+          }}
         >
           <Icon className="size-4" />
           {title}
@@ -291,7 +314,11 @@ function Dashboard({ userId, email }: { userId: string; email: string }) {
               <span className="size-2 rounded-full bg-primary" />
               RA2 workspace<span className="mx-2 text-border">/</span>
               <span className="font-medium text-foreground">
-                {tab === "bookings" ? "Bookings" : "Team & account"}
+                {tab === "bookings"
+                  ? "Bookings"
+                  : tab === "packages"
+                    ? "Packages"
+                    : "Team & account"}
               </span>
             </div>
             <div className="flex items-center gap-3">
@@ -317,7 +344,7 @@ function Dashboard({ userId, email }: { userId: string; email: string }) {
           </div>
           <nav
             aria-label="Mobile admin navigation"
-            className="-mx-5 mt-4 flex gap-2 bg-forest px-2 py-2 lg:hidden"
+            className="-mx-5 mt-4 flex gap-2 overflow-x-auto bg-forest px-2 py-2 lg:hidden"
           >
             {nav}
           </nav>
@@ -330,6 +357,8 @@ function Dashboard({ userId, email }: { userId: string; email: string }) {
           )}
           {tab === "team" ? (
             <TeamPanel currentUserId={userId} />
+          ) : tab === "packages" ? (
+            <PackagesPanel onDirtyChange={setPackageDirty} />
           ) : (
             <>
               <div className="mb-8 flex flex-wrap items-end justify-between gap-4">

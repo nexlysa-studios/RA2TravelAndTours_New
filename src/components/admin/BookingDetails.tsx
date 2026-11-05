@@ -182,7 +182,9 @@ function BookingDetailBody({ booking: b }: { booking: Booking }) {
         <h3 className="mb-4 text-2xl">Journey details</h3>
         <dl className="grid gap-4 sm:grid-cols-2">
           <Detail label="Pickup" value={b.pickup_location || "To be arranged"} />
-          {b.experience === "Transfer / Chauffeur" && (
+          {(b.package_type
+            ? b.package_type === "transfer"
+            : b.experience === "Transfer / Chauffeur") && (
             <>
               <Detail label="Drop-off" value={b.dropoff_location} />
               <Detail label="Pickup time" value={`${b.pickup_time} SAST (UTC+2)`} />
@@ -198,6 +200,35 @@ function BookingDetailBody({ booking: b }: { booking: Booking }) {
           </div>
         )}
       </section>
+      {b.package_snapshot && (
+        <details className="rounded-xl border border-border p-5">
+          <summary className="cursor-pointer text-sm font-semibold">
+            Package details when this request was made
+          </summary>
+          <div className="mt-4 space-y-3 text-sm text-muted-foreground">
+            <p className="font-semibold text-primary">{b.package_snapshot.name}</p>
+            <p>{b.package_snapshot.duration}</p>
+            {b.package_snapshot.included.length > 0 && (
+              <p>
+                <strong>Included: </strong>
+                {b.package_snapshot.included.join(" ")}
+              </p>
+            )}
+            {b.package_snapshot.excluded.length > 0 && (
+              <p>
+                <strong>Excluded: </strong>
+                {b.package_snapshot.excluded.join(" ")}
+              </p>
+            )}
+            {b.package_snapshot.booking_terms && (
+              <p className="whitespace-pre-line">{b.package_snapshot.booking_terms}</p>
+            )}
+            <p className="text-xs">
+              This is the version recorded for this request. Later package edits do not change it.
+            </p>
+          </div>
+        </details>
+      )}
       <section className="space-y-4">
         <h3 className="text-2xl">Manage this booking</h3>
         <div>

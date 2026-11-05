@@ -17,6 +17,7 @@ import { Route as SafarisRouteImport } from './routes/safaris'
 import { Route as TailorMadeRouteImport } from './routes/tailor-made'
 import { Route as TransfersRouteImport } from './routes/transfers'
 import { Route as ToursIndexRouteImport } from './routes/tours.index'
+import { Route as ToursSlugRouteImport } from './routes/tours.$slug'
 import { Route as ToursPeninsulaRouteImport } from './routes/tours.peninsula'
 
 const IndexRoute = IndexRouteImport.update({
@@ -59,6 +60,11 @@ const ToursIndexRoute = ToursIndexRouteImport.update({
   path: '/tours/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ToursSlugRoute = ToursSlugRouteImport.update({
+  id: '/tours/$slug',
+  path: '/tours/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ToursPeninsulaRoute = ToursPeninsulaRouteImport.update({
   id: '/tours/peninsula',
   path: '/tours/peninsula',
@@ -73,6 +79,7 @@ export interface FileRoutesByFullPath {
   '/safaris': typeof SafarisRoute
   '/tailor-made': typeof TailorMadeRoute
   '/transfers': typeof TransfersRoute
+  '/tours/$slug': typeof ToursSlugRoute
   '/tours/peninsula': typeof ToursPeninsulaRoute
   '/tours/': typeof ToursIndexRoute
 }
@@ -84,6 +91,7 @@ export interface FileRoutesByTo {
   '/safaris': typeof SafarisRoute
   '/tailor-made': typeof TailorMadeRoute
   '/transfers': typeof TransfersRoute
+  '/tours/$slug': typeof ToursSlugRoute
   '/tours/peninsula': typeof ToursPeninsulaRoute
   '/tours': typeof ToursIndexRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/safaris': typeof SafarisRoute
   '/tailor-made': typeof TailorMadeRoute
   '/transfers': typeof TransfersRoute
+  '/tours/$slug': typeof ToursSlugRoute
   '/tours/peninsula': typeof ToursPeninsulaRoute
   '/tours/': typeof ToursIndexRoute
 }
@@ -109,6 +118,7 @@ export interface FileRouteTypes {
     | '/safaris'
     | '/tailor-made'
     | '/transfers'
+    | '/tours/$slug'
     | '/tours/peninsula'
     | '/tours/'
   fileRoutesByTo: FileRoutesByTo
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/safaris'
     | '/tailor-made'
     | '/transfers'
+    | '/tours/$slug'
     | '/tours/peninsula'
     | '/tours'
   id:
@@ -131,6 +142,7 @@ export interface FileRouteTypes {
     | '/safaris'
     | '/tailor-made'
     | '/transfers'
+    | '/tours/$slug'
     | '/tours/peninsula'
     | '/tours/'
   fileRoutesById: FileRoutesById
@@ -143,6 +155,7 @@ export interface RootRouteChildren {
   SafarisRoute: typeof SafarisRoute
   TailorMadeRoute: typeof TailorMadeRoute
   TransfersRoute: typeof TransfersRoute
+  ToursSlugRoute: typeof ToursSlugRoute
   ToursPeninsulaRoute: typeof ToursPeninsulaRoute
   ToursIndexRoute: typeof ToursIndexRoute
 }
@@ -205,6 +218,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ToursIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tours/$slug': {
+      id: '/tours/$slug'
+      path: '/tours/$slug'
+      fullPath: '/tours/$slug'
+      preLoaderRoute: typeof ToursSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tours/peninsula': {
       id: '/tours/peninsula'
       path: '/tours/peninsula'
@@ -223,6 +243,7 @@ const rootRouteChildren: RootRouteChildren = {
   SafarisRoute: SafarisRoute,
   TailorMadeRoute: TailorMadeRoute,
   TransfersRoute: TransfersRoute,
+  ToursSlugRoute: ToursSlugRoute,
   ToursPeninsulaRoute: ToursPeninsulaRoute,
   ToursIndexRoute: ToursIndexRoute,
 }

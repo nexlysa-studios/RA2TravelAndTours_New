@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
   ArrowRight,
@@ -25,21 +26,24 @@ import { CONTACT } from "@/lib/site";
 import {
   bookingSchema,
   bookingStepSchemas,
-  EXPERIENCES,
   formatTravelDate,
   initialBooking,
+  isTransferBooking,
   STEP_FIELDS,
   todayInSouthAfrica,
   type BookingDraft,
 } from "@/lib/bookings";
 import { functionError, getSupabase } from "@/lib/supabase";
+import { packageImage, publicPackagesOptions, type TravelPackage } from "@/lib/packages";
 import peninsula from "@/assets/peninsula.jpg";
-import safari from "@/assets/safari.jpg";
-import winelands from "@/assets/winelands.jpg";
 
 export const Route = createFileRoute("/plan-my-trip")({
-  validateSearch: (s: Record<string, unknown>): { experience?: string | undefined } => ({
+  loader: ({ context }) => context.queryClient.ensureQueryData(publicPackagesOptions),
+  validateSearch: (
+    s: Record<string, unknown>,
+  ): { experience?: string | undefined; package?: string | undefined } => ({
     experience: typeof s["experience"] === "string" ? s["experience"] : undefined,
+    package: typeof s["package"] === "string" ? s["package"] : undefined,
   }),
   head: () => ({
     meta: [
@@ -55,17 +59,13 @@ export const Route = createFileRoute("/plan-my-trip")({
 });
 
 const STEPS = ["Your experience", "Travel details", "Your details", "Review & send"];
-const ICONS = [Compass, Leaf, Mountain, Leaf, Sparkles, Mountain, Car, MessageCircle];
-const DESCRIPTIONS = [
-  "Coastal roads, Cape Point & penguins",
-  "Beautiful estates & mountain valleys",
-  "The Mother City, from street to summit",
-  "A wildlife escape from Cape Town",
-  "A journey designed around you",
-  "An unforgettable bush experience",
-  "Airport, private & group transport",
-  "Let us help you find your adventure",
-];
+const ICONS = {
+  tour: Compass,
+  safari: Leaf,
+  journey: Sparkles,
+  transfer: Car,
+  consultation: MessageCircle,
+};
 
 function FormField({
   id,
@@ -108,13 +108,18 @@ function FormField({
 }
 
 function Plan() {
-  const { experience } = Route.useSearch();
+  const { experience, package: packageId } = Route.useSearch();
+  const packages = useSuspenseQuery({
+    ...publicPackagesOptions,
+    initialData: Route.useLoaderData(),
+  }).data;
+  const preselected = packages.find((p) =>
+    packageId ? p.id === packageId : p.name === experience,
+  );
   const [draft, setDraft] = useState<BookingDraft>({
     ...initialBooking,
-    experience:
-      experience && EXPERIENCES.includes(experience as (typeof EXPERIENCES)[number])
-        ? experience
-        : "",
+    experience: preselected?.name || "",
+    ...(preselected ? { package_id: preselected.id, package_type: preselected.package_type } : {}),
   });
   const [step, setStep] = useState(0);
   const [editing, setEditing] = useState(false);
@@ -126,7 +131,28 @@ function Plan() {
   const lastSubmission = useRef<{ fingerprint: string; id: string } | null>(null);
   const formTop = useRef<HTMLDivElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
-  const isTransfer = draft.experience === "Transfer / Chauffeur";
+  const selectedPackage = packages.find((p) => p.id === draft.package_id);
+  const packageOutdated = Boolean(
+    draft.package_id &&
+    (!selectedPackage ||
+      selectedPackage.name !== draft.experience ||
+      selectedPackage.package_type !== draft.package_type),
+  );
+  const isTransfer = isTransferBooking(draft);
+  const choosePackage = (pkg: TravelPackage) => {
+    setDraft((old) => ({
+      ...old,
+      experience: pkg.name,
+      package_id: pkg.id,
+      package_type: pkg.package_type,
+      consent: false,
+      ...(old.package_type === "transfer" && pkg.package_type !== "transfer"
+        ? { dropoff_location: "", pickup_time: "", flight_number: "", luggage: 0 }
+        : {}),
+    }));
+    setErrors({});
+    setError("");
+  };
   const update = <K extends keyof BookingDraft>(key: K, value: BookingDraft[K]) => {
     setDraft((old) => ({ ...old, [key]: value, ...(key !== "consent" ? { consent: false } : {}) }));
     setErrors((old) => {
@@ -148,6 +174,11 @@ function Plan() {
   };
   const editStep = (value: number) => moveTo(value, step === 3 || editing);
   const next = () => {
+    if (!selectedPackage || packageOutdated) {
+      setStep(0);
+      setErrors({ experience: "Choose an experience to continue." });
+      return;
+    }
     const result = bookingStepSchemas[step]!.safeParse(draft);
     const currentFields: readonly string[] = STEP_FIELDS[step]!;
     const issues = result.success
@@ -165,6 +196,13 @@ function Plan() {
     if (sending) return;
     if (step < 3) {
       next();
+      return;
+    }
+    if (!selectedPackage || packageOutdated) {
+      setStep(0);
+      setError(
+        "This package was updated or unpublished. Please select a current experience; your other details are still here.",
+      );
       return;
     }
     const result = bookingSchema.safeParse(draft);
@@ -222,13 +260,7 @@ function Plan() {
     <>
       <div className="relative h-36 overflow-hidden rounded-t-xl">
         <img
-          src={
-            draft.experience.includes("Safari") || draft.experience.includes("Aquila")
-              ? safari
-              : draft.experience.includes("Winelands")
-                ? winelands
-                : peninsula
-          }
+          src={selectedPackage ? packageImage(selectedPackage) : peninsula}
           alt="South African scenery"
           className="h-full w-full object-cover"
         />
@@ -420,20 +452,20 @@ function Plan() {
                   <fieldset id="experience" tabIndex={-1}>
                     <legend className="sr-only">Choose an experience</legend>
                     <div className="grid gap-3 sm:grid-cols-2">
-                      {EXPERIENCES.map((name, i) => {
-                        const Icon = ICONS[i]!;
-                        const selected = draft.experience === name;
+                      {packages.map((pkg) => {
+                        const Icon = ICONS[pkg.package_type];
+                        const selected = draft.package_id === pkg.id && !packageOutdated;
                         return (
                           <label
-                            key={name}
+                            key={pkg.id}
                             className={`relative flex cursor-pointer items-start gap-3 rounded-xl border p-4 transition-colors ${selected ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-border hover:border-gold hover:bg-secondary/30"}`}
                           >
                             <input
                               type="radio"
                               name="experience"
-                              value={name}
+                              value={pkg.id}
                               checked={selected}
-                              onChange={() => update("experience", name)}
+                              onChange={() => choosePackage(pkg)}
                               className="peer absolute inset-0 z-10 size-full cursor-pointer opacity-0"
                             />
                             <span className="pointer-events-none absolute inset-0 rounded-xl peer-focus-visible:ring-2 peer-focus-visible:ring-gold peer-focus-visible:ring-offset-2" />
@@ -441,9 +473,9 @@ function Plan() {
                               className={`mt-1 size-5 shrink-0 ${selected ? "text-primary" : "text-gold"}`}
                             />
                             <span className="min-w-0 flex-1">
-                              <span className="block text-sm font-semibold">{name}</span>
+                              <span className="block text-sm font-semibold">{pkg.name}</span>
                               <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">
-                                {DESCRIPTIONS[i]}
+                                {pkg.summary}
                               </span>
                             </span>
                             <span
@@ -455,6 +487,18 @@ function Plan() {
                         );
                       })}
                     </div>
+                    {!packages.length && (
+                      <p className="rounded-lg bg-secondary p-4 text-sm">
+                        We’re updating our experiences. Please contact RA2 directly to plan your
+                        trip.
+                      </p>
+                    )}
+                    {packageOutdated && (
+                      <p role="alert" className="mt-3 text-sm text-destructive">
+                        Your selected package changed. Please choose it again to review the latest
+                        details.
+                      </p>
+                    )}
                     {errors["experience"] && (
                       <p className="mt-3 text-sm text-destructive" role="alert">
                         {errors["experience"]}
@@ -687,8 +731,35 @@ function Plan() {
                     <ReviewSection title="Your experience" onEdit={() => editStep(0)}>
                       <p className="font-semibold text-primary">{draft.experience}</p>
                       <p className="mt-1 text-xs text-muted-foreground">
-                        Private, personalised and planned with you.
+                        {selectedPackage?.duration} · {selectedPackage?.location}
                       </p>
+                      {selectedPackage &&
+                        (selectedPackage.included.length > 0 || selectedPackage.booking_terms) && (
+                          <details className="mt-4 rounded-lg bg-secondary/60 p-3">
+                            <summary className="cursor-pointer text-xs font-semibold text-primary">
+                              Package inclusions & booking information
+                            </summary>
+                            <div className="mt-3 space-y-3 text-xs leading-relaxed text-muted-foreground">
+                              {selectedPackage.included.length > 0 && (
+                                <p>
+                                  <strong>Included: </strong>
+                                  {selectedPackage.included.join(" ")}
+                                </p>
+                              )}
+                              {selectedPackage.excluded.length > 0 && (
+                                <p>
+                                  <strong>Excluded: </strong>
+                                  {selectedPackage.excluded.join(" ")}
+                                </p>
+                              )}
+                              {selectedPackage.booking_terms && (
+                                <p className="whitespace-pre-line">
+                                  {selectedPackage.booking_terms}
+                                </p>
+                              )}
+                            </div>
+                          </details>
+                        )}
                     </ReviewSection>
                     <ReviewSection title="Travel details" onEdit={() => editStep(1)}>
                       <dl className="grid gap-4 sm:grid-cols-2">
