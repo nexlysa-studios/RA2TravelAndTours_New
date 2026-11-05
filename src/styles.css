@@ -103,3 +103,20 @@
 @utility hero-scrim {
   background: linear-gradient(180deg, color-mix(in oklab, var(--forest-deep) 55%, transparent) 0%, color-mix(in oklab, var(--forest-deep) 15%, transparent) 40%, color-mix(in oklab, var(--forest-deep) 80%, transparent) 100%);
 }
+
+@layer components {
+  .booking-input {
+    @apply w-full min-w-0 rounded-lg border border-input bg-card px-3.5 py-3 text-base outline-none transition-shadow focus:border-gold focus:ring-2 focus:ring-gold/20 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .booking-input[aria-invalid="true"] { @apply border-destructive; }
+  .booking-button {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-forest-deep disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .booking-button-secondary {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm font-medium transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .booking-contact-link {
+    @apply inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-lg border border-border bg-card p-3 text-primary transition-colors hover:border-gold hover:bg-secondary;
+  }
+  button, a, input, select, textarea, summary { @apply focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold; }
+}

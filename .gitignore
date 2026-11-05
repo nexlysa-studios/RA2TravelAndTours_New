@@ -16,6 +16,14 @@ dist-ssr
 .nitro
 .netlify
 *.local
+.env
+.env.*
+!.env.example
+supabase/.temp/
+supabase/.branches/
+.qa/
+test-results/
+playwright-report/
 
 # Wrangler / Cloudflare
 .wrangler/

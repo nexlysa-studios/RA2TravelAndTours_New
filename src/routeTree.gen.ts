@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as PlanMyTripRouteImport } from './routes/plan-my-trip'
 import { Route as SafarisRouteImport } from './routes/safaris'
 import { Route as TailorMadeRouteImport } from './routes/tailor-made'
@@ -26,6 +27,11 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlanMyTripRoute = PlanMyTripRouteImport.update({
@@ -62,6 +68,7 @@ const ToursPeninsulaRoute = ToursPeninsulaRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/plan-my-trip': typeof PlanMyTripRoute
   '/safaris': typeof SafarisRoute
   '/tailor-made': typeof TailorMadeRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/plan-my-trip': typeof PlanMyTripRoute
   '/safaris': typeof SafarisRoute
   '/tailor-made': typeof TailorMadeRoute
@@ -83,6 +91,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/plan-my-trip': typeof PlanMyTripRoute
   '/safaris': typeof SafarisRoute
   '/tailor-made': typeof TailorMadeRoute
@@ -95,6 +104,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/admin'
     | '/plan-my-trip'
     | '/safaris'
     | '/tailor-made'
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/admin'
     | '/plan-my-trip'
     | '/safaris'
     | '/tailor-made'
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/admin'
     | '/plan-my-trip'
     | '/safaris'
     | '/tailor-made'
@@ -126,6 +138,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
   PlanMyTripRoute: typeof PlanMyTripRoute
   SafarisRoute: typeof SafarisRoute
   TailorMadeRoute: typeof TailorMadeRoute
@@ -148,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/plan-my-trip': {
@@ -198,6 +218,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
   PlanMyTripRoute: PlanMyTripRoute,
   SafarisRoute: SafarisRoute,
   TailorMadeRoute: TailorMadeRoute,

@@ -81,6 +81,7 @@ export function Footer() {
             <li><Link to="/about" className="hover:text-gold">About RA2</Link></li>
             <li><Link to="/plan-my-trip" className="hover:text-gold">Contact</Link></li>
             <li><Link to="/tours/peninsula" hash="faq" className="hover:text-gold">FAQs</Link></li>
+            <li><Link to="/admin" className="hover:text-gold">Staff sign in</Link></li>
           </ul>
         </div>
         <div>
