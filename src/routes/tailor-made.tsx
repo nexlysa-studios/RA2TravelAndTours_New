@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import hero from "@/assets/winelands.jpg";
-import { packageImage, publicPackagesOptions } from "@/lib/packages";
+import { packageImage, packageLink, publicPackagesOptions } from "@/lib/packages";
 import { CtaBand, GoldButton, PageHero } from "@/components/site/SiteChrome";
 
 export const Route = createFileRoute("/tailor-made")({
@@ -62,7 +62,7 @@ function Page() {
                 <p className="mt-3 text-sm italic text-muted-foreground">
                   Sample itinerary — routes, stays and inclusions are confirmed in your proposal.
                 </p>
-                <Link to="/tours/$slug" params={{ slug: j.slug }} className="booking-button mt-6">
+                <Link {...packageLink(j)} className="booking-button mt-6">
                   Explore this journey
                 </Link>
               </div>

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { PACKAGE_TYPES } from "./package-schema.ts";
+import { vehicleSelectionSchema } from "./fleet-schema.ts";
 
 export function todayInSouthAfrica() {
   return new Intl.DateTimeFormat("en-CA", {
@@ -23,6 +24,8 @@ const bookingFields = {
   experience: z.string().trim().min(2, "Choose an experience to continue.").max(140),
   package_id: z.string().uuid().optional(),
   package_type: z.enum(PACKAGE_TYPES).optional(),
+  vehicle_choice: z.enum(["specific", "recommend"]).optional(),
+  vehicle_id: z.string().uuid().optional(),
   travel_date: z
     .string()
     .refine(
@@ -103,7 +106,15 @@ function validateTravel(
   }
 }
 
-export const bookingSchema = z.object(bookingFields).superRefine(validateTravel);
+export const bookingSchema = z.object(bookingFields).superRefine((data, ctx) => {
+  validateTravel(data, ctx);
+  // Previously deployed four-step clients omit these fields. Keep their retry
+  // payloads intact; new clients make the preference explicit in step three.
+  if (data.vehicle_choice !== undefined || data.vehicle_id !== undefined) {
+    const choice = vehicleSelectionSchema.safeParse(data);
+    if (!choice.success) for (const issue of choice.error.issues) ctx.addIssue(issue);
+  }
+});
 export const bookingStepSchemas = [
   z.object({ experience: bookingFields.experience }),
   z
@@ -122,6 +133,7 @@ export const bookingStepSchemas = [
       special_requests: bookingFields.special_requests,
     })
     .superRefine(validateTravel),
+  vehicleSelectionSchema,
   z.object({
     full_name: bookingFields.full_name,
     email: bookingFields.email,
@@ -138,6 +150,7 @@ export type BookingDraft = Omit<BookingInput, "experience" | "consent"> & {
 };
 export const initialBooking: BookingDraft = {
   experience: "",
+  vehicle_choice: "recommend",
   travel_date: "",
   flexible_dates: false,
   adults: 2,
@@ -168,6 +181,7 @@ export const STEP_FIELDS = [
     "luggage",
     "special_requests",
   ],
+  ["vehicle_choice", "vehicle_id"],
   ["full_name", "email", "phone", "contact_preference"],
   ["consent"],
 ] as const;

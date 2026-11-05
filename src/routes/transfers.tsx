@@ -2,22 +2,20 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { publicPackagesOptions } from "@/lib/packages";
 import { TourCardView } from "@/components/site/TourCardView";
+import { publicFleetOptions } from "@/lib/fleet";
+import { FleetCard } from "@/components/site/FleetCards";
 import hero from "@/assets/hero.jpg";
-import sedan from "@/assets/Fleet (9).JPG";
-import mercedesC180 from "@/assets/Fleet (2).JPG";
-import toyotaRumion from "@/assets/Fleet (4).JPG";
-import mercedesVClass from "@/assets/Fleet (10).JPG";
-import hyundaiStaria from "@/assets/Fleet (3).JPG";
-import toyotaQuantum from "@/assets/Fleet (1).JPG";
-import toyotaQuantumGl from "@/assets/Fleet (6).JPG";
-import toyotaHiace from "@/assets/Fleet (8).JPG";
-import mercedesSprinter from "@/assets/Fleet (5).JPG";
-import bus from "@/assets/Fleet (7).JPG";
 import { CONTACT } from "@/lib/site";
 import { GoldButton, PageHero } from "@/components/site/SiteChrome";
 
 export const Route = createFileRoute("/transfers")({
-  loader: ({ context }) => context.queryClient.ensureQueryData(publicPackagesOptions),
+  loader: async ({ context }) => {
+    const [packages, fleet] = await Promise.all([
+      context.queryClient.ensureQueryData(publicPackagesOptions),
+      context.queryClient.ensureQueryData(publicFleetOptions),
+    ]);
+    return { packages, fleet };
+  },
   head: () => ({
     meta: [
       { title: "Our Fleet — Transfers & Chauffeur Service | RA2 Travel and Tours" },
@@ -36,73 +34,12 @@ export const Route = createFileRoute("/transfers")({
   component: Page,
 });
 
-const FLEET = [
-  {
-    name: "Standard Sedan",
-    capacity: "Recommended for 1–3 guests",
-    description: "Everyday comfort for private transfers and smaller journeys.",
-    image: sedan,
-  },
-  {
-    name: "Mercedes-Benz C180",
-    capacity: "Private travel for 1–3 guests",
-    description: "A refined sedan option for a comfortable private trip.",
-    image: mercedesC180,
-  },
-  {
-    name: "Toyota Rumion",
-    capacity: "Up to 6 guests",
-    description: "A compact MPV suited to families and small groups.",
-    image: toyotaRumion,
-  },
-  {
-    name: "Mercedes-Benz V-Class",
-    capacity: "Up to 6 guests",
-    description: "Premium passenger travel with a spacious cabin.",
-    image: mercedesVClass,
-  },
-  {
-    name: "Hyundai Staria",
-    capacity: "Up to 8 guests + driver",
-    description: "An executive-style people mover for small groups.",
-    image: hyundaiStaria,
-  },
-  {
-    name: "Toyota Quantum",
-    capacity: "Up to 10 guests + driver",
-    description: "A roomy option for airport transfers and group travel.",
-    image: toyotaQuantum,
-  },
-  {
-    name: "Toyota Quantum GL",
-    capacity: "13 passengers + driver",
-    description: "Extra capacity for group transfers and private tours.",
-    image: toyotaQuantumGl,
-  },
-  {
-    name: "Toyota Hiace GL",
-    capacity: "13 guests + driver",
-    description: "Classic group transport with a spacious passenger cabin.",
-    image: toyotaHiace,
-  },
-  {
-    name: "Mercedes-Benz Sprinter",
-    capacity: "20 guests + driver",
-    description: "A larger vehicle for group journeys and transfers.",
-    image: mercedesSprinter,
-  },
-  {
-    name: "30-Seater Bus",
-    capacity: "Confirm available guest seats when booking",
-    description: "A coach option for larger groups and shared journeys.",
-    image: bus,
-  },
-];
-
 function Page() {
+  const loaderData = Route.useLoaderData();
+  const fleet = useSuspenseQuery({ ...publicFleetOptions, initialData: loaderData.fleet }).data;
   const packages = useSuspenseQuery({
     ...publicPackagesOptions,
-    initialData: Route.useLoaderData(),
+    initialData: loaderData.packages,
   }).data.filter((p) => p.package_type === "transfer" && p.show_on_category_page);
   const primary = packages[0];
   return (
@@ -147,28 +84,15 @@ function Page() {
             </p>
           </div>
           <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
-            {FLEET.map((vehicle) => (
-              <article
-                key={vehicle.name}
-                className="overflow-hidden rounded-md bg-card ring-1 ring-border"
-              >
-                <div className="aspect-[2/3] bg-muted">
-                  <img
-                    src={vehicle.image}
-                    alt={`${vehicle.name} vehicle and seating information`}
-                    loading="lazy"
-                    className="h-full w-full object-contain"
-                  />
-                </div>
-                <div className="space-y-3 p-6">
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gold">
-                    {vehicle.capacity}
-                  </p>
-                  <h3 className="font-serif text-2xl text-foreground">{vehicle.name}</h3>
-                  <p className="text-sm text-muted-foreground">{vehicle.description}</p>
-                </div>
-              </article>
+            {fleet.map((vehicle) => (
+              <FleetCard key={vehicle.id} vehicle={vehicle} package={primary} />
             ))}
+            {!fleet.length && (
+              <p className="text-muted-foreground sm:col-span-2">
+                Our team can recommend a suitable vehicle. Contact RA2 with your group and luggage
+                details.
+              </p>
+            )}
           </div>
           <p className="mt-8 text-sm text-muted-foreground">
             Vehicle and seating visuals are illustrative. Vehicle availability, seating

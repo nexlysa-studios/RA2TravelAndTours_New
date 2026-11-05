@@ -22,6 +22,12 @@ export function packageImage(pkg: Pick<TravelPackage, "image_key" | "image_url">
   return pkg.image_url || PACKAGE_IMAGES[pkg.image_key];
 }
 
+export function packageLink(pkg: Pick<TravelPackage, "slug">) {
+  return pkg.slug === "peninsula"
+    ? { to: "/tours/peninsula" as const }
+    : { to: "/tours/$slug" as const, params: { slug: pkg.slug } };
+}
+
 // Public queries deliberately use a stateless anon client, even when an admin is
 // signed in. Draft packages must never enter SSR output or public query caches.
 async function fetchPublishedPackages(signal?: AbortSignal): Promise<TravelPackage[]> {

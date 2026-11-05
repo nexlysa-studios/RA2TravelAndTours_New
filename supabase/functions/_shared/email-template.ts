@@ -1,11 +1,14 @@
 import type { BookingInput } from "./booking-schema.ts";
 import { formatTravelDate, isTransferBooking } from "./booking-schema.ts";
+import type { VehicleSnapshot } from "./fleet-schema.ts";
 
 export type EmailBooking = Omit<BookingInput, "consent" | "travel_date"> & {
   id: string;
   reference: string;
   travel_date: string | null;
   created_at: string;
+  vehicle_preference?: "specific" | "recommend" | null;
+  vehicle_snapshot?: VehicleSnapshot | null;
 };
 export const escapeHtml = (value: unknown) =>
   String(value ?? "").replace(
@@ -41,6 +44,19 @@ export function bookingEmail(b: EmailBooking, audience: "guest" | "admin", siteU
   if (b.flight_number) rows.push(["Flight", b.flight_number]);
   if (isTransferBooking(b)) rows.push(["Luggage", `${b.luggage} pieces`]);
   if (b.special_requests) rows.push(["Additional details", b.special_requests]);
+  if (b.vehicle_preference === "specific" && b.vehicle_snapshot) {
+    rows.push(
+      ["Requested vehicle", b.vehicle_snapshot.name],
+      ["Guest seating", b.vehicle_snapshot.capacity_label],
+    );
+    if (b.vehicle_snapshot.luggage_guide)
+      rows.push(["Vehicle luggage guide", b.vehicle_snapshot.luggage_guide]);
+    rows.push([
+      "Vehicle availability",
+      "Vehicle preference only. Availability, guest seats and luggage fit are confirmed with your quotation.",
+    ]);
+  } else if (b.vehicle_preference === "recommend")
+    rows.push(["Vehicle preference", "Let RA2 recommend a suitable vehicle or group arrangement."]);
   const note =
     "This confirms receipt of your request. Your trip is only confirmed once RA2 has agreed availability, itinerary and pricing with you. No payment has been taken.";
   const actionUrl = isAdmin

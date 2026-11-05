@@ -59,6 +59,26 @@ Deno.serve(async (req) => {
       p_data: booking,
     });
     if (error) {
+      if (error.message.includes("VEHICLE_UNAVAILABLE"))
+        return json(
+          {
+            error:
+              "This vehicle is no longer available. Choose another vehicle or ask RA2 to recommend one.",
+          },
+          409,
+          cors,
+        );
+      if (error.message.includes("VEHICLE_CAPACITY"))
+        return json(
+          {
+            error:
+              "Your group exceeds this vehicle’s guest capacity. Choose a larger vehicle or let RA2 recommend an arrangement.",
+          },
+          400,
+          cors,
+        );
+      if (error.message.includes("VEHICLE_SELECTION_INVALID"))
+        return json({ error: "Select a vehicle or choose ‘Let RA2 recommend’." }, 400, cors);
       if (
         error.message.includes("PACKAGE_UNAVAILABLE") ||
         error.message.includes("PACKAGE_CHANGED")

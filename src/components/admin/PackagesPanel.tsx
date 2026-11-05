@@ -5,6 +5,7 @@ import { Link } from "@tanstack/react-router";
 import { getSupabase } from "@/lib/supabase";
 import {
   packageImage,
+  packageLink,
   packageRecordSchema,
   PACKAGE_TYPE_LABELS,
   type TravelPackage,
@@ -163,8 +164,7 @@ export function PackagesPanel({ onDirtyChange }: { onDirtyChange: (dirty: boolea
                   </button>
                   {p.is_published && (
                     <Link
-                      to="/tours/$slug"
-                      params={{ slug: p.slug }}
+                      {...packageLink(p)}
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex min-h-10 items-center gap-1 text-xs text-muted-foreground"

@@ -229,6 +229,33 @@ function BookingDetailBody({ booking: b }: { booking: Booking }) {
           </div>
         </details>
       )}
+      <section className="rounded-xl border border-border p-5">
+        <h3 className="mb-3 text-2xl">Vehicle preference</h3>
+        {b.vehicle_preference === "specific" && b.vehicle_snapshot ? (
+          <div className="space-y-3 text-sm">
+            <p className="font-semibold text-primary">{b.vehicle_snapshot.name}</p>
+            <p>{b.vehicle_snapshot.capacity_label}</p>
+            <p className="text-muted-foreground">
+              <strong>Seating: </strong>
+              {b.vehicle_snapshot.seating_notes}
+            </p>
+            <p className="text-muted-foreground">
+              <strong>Luggage: </strong>
+              {b.vehicle_snapshot.luggage_guide}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Recorded when the request was made. Confirm availability, actual seats and luggage fit
+              with the guest.
+            </p>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            {b.vehicle_preference === "recommend"
+              ? "The guest asked RA2 to recommend a suitable vehicle or group arrangement."
+              : "No vehicle preference was recorded on this earlier request."}
+          </p>
+        )}
+      </section>
       <section className="space-y-4">
         <h3 className="text-2xl">Manage this booking</h3>
         <div>

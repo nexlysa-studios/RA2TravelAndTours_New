@@ -49,6 +49,9 @@ test("guest review/edit/submit and admin follow-up work on desktop and mobile", 
     await page.getByLabel("Luggage pieces").fill("4");
     await page.getByLabel("Anything else").fill("Browser QA request — child seat required.");
     await page.getByRole("button", { name: "Continue", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Choose your ride." })).toBeVisible();
+    await page.getByRole("radio", { name: /Let RA2 recommend the right vehicle/ }).check();
+    await page.getByRole("button", { name: "Continue", exact: true }).click();
     await page.getByLabel("Full name", { exact: false }).fill("Browser QA Guest");
     await page.getByLabel("Email address", { exact: false }).fill(qaEmail);
     await page.getByLabel("Phone / WhatsApp number", { exact: false }).fill("+27780000000");

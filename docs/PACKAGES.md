@@ -33,7 +33,7 @@ Choose **Transfer / chauffeur** as the type when pickup, drop-off and pickup tim
 - **Display order:** lower numbers come first; equal numbers sort by name.
 - **Tour filters:** choose the categories used by the Private Tours filters.
 
-Each package has a page at `/tours/<its-address>`. The existing `/tours/peninsula` address is preserved. Fleet vehicle photographs and seating specifications remain in the fleet page; the transfer package itself is editable here.
+Each package has a page at `/tours/<its-address>`. The existing `/tours/peninsula` address is preserved. Manage vehicle photographs, guest seating and luggage guidance separately under **Admin → Fleet**; see [the Fleet guide](FLEET.md).
 
 ## Pause a package
 

@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Clock, MapPin } from "lucide-react";
-import { packageImage, type TravelPackage } from "@/lib/packages";
+import { packageImage, packageLink, type TravelPackage } from "@/lib/packages";
 
 export function TourCardView({ tour }: { tour: TravelPackage }) {
   return (
@@ -28,8 +28,7 @@ export function TourCardView({ tour }: { tour: TravelPackage }) {
           </span>
         </div>
         <Link
-          to="/tours/$slug"
-          params={{ slug: tour.slug }}
+          {...packageLink(tour)}
           className="mt-6 text-sm font-semibold text-primary underline-offset-4 hover:underline"
         >
           View experience →

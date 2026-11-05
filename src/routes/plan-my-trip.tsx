@@ -35,15 +35,28 @@ import {
 } from "@/lib/bookings";
 import { functionError, getSupabase } from "@/lib/supabase";
 import { packageImage, publicPackagesOptions, type TravelPackage } from "@/lib/packages";
+import { publicFleetOptions, vehicleFits, type FleetVehicle } from "@/lib/fleet";
+import { VehicleSelection } from "@/components/site/FleetCards";
 import peninsula from "@/assets/peninsula.jpg";
 
 export const Route = createFileRoute("/plan-my-trip")({
-  loader: ({ context }) => context.queryClient.ensureQueryData(publicPackagesOptions),
+  loader: async ({ context }) => {
+    const [packages, fleet] = await Promise.all([
+      context.queryClient.ensureQueryData(publicPackagesOptions),
+      context.queryClient.ensureQueryData(publicFleetOptions),
+    ]);
+    return { packages, fleet };
+  },
   validateSearch: (
     s: Record<string, unknown>,
-  ): { experience?: string | undefined; package?: string | undefined } => ({
+  ): {
+    experience?: string | undefined;
+    package?: string | undefined;
+    vehicle?: string | undefined;
+  } => ({
     experience: typeof s["experience"] === "string" ? s["experience"] : undefined,
     package: typeof s["package"] === "string" ? s["package"] : undefined,
+    vehicle: typeof s["vehicle"] === "string" ? s["vehicle"] : undefined,
   }),
   head: () => ({
     meta: [
@@ -51,14 +64,14 @@ export const Route = createFileRoute("/plan-my-trip")({
       {
         name: "description",
         content:
-          "Plan your private South African journey in four simple steps. Review your request and receive a personalised quote from RA2.",
+          "Plan your private South African journey in five simple steps. Review your request and receive a personalised quote from RA2.",
       },
     ],
   }),
   component: Plan,
 });
 
-const STEPS = ["Your experience", "Travel details", "Your details", "Review & send"];
+const STEPS = ["Experience", "Travel details", "Choose vehicle", "Your details", "Review & send"];
 const ICONS = {
   tour: Compass,
   safari: Leaf,
@@ -108,11 +121,14 @@ function FormField({
 }
 
 function Plan() {
-  const { experience, package: packageId } = Route.useSearch();
+  const { experience, package: packageId, vehicle: vehicleId } = Route.useSearch();
+  const loaderData = Route.useLoaderData();
   const packages = useSuspenseQuery({
     ...publicPackagesOptions,
-    initialData: Route.useLoaderData(),
+    initialData: loaderData.packages,
   }).data;
+  const fleet = useSuspenseQuery({ ...publicFleetOptions, initialData: loaderData.fleet }).data;
+  const preselectedVehicle = fleet.find((v) => v.id === vehicleId);
   const preselected = packages.find((p) =>
     packageId ? p.id === packageId : p.name === experience,
   );
@@ -120,6 +136,9 @@ function Plan() {
     ...initialBooking,
     experience: preselected?.name || "",
     ...(preselected ? { package_id: preselected.id, package_type: preselected.package_type } : {}),
+    ...(preselectedVehicle
+      ? { vehicle_choice: "specific", vehicle_id: preselectedVehicle.id }
+      : {}),
   });
   const [step, setStep] = useState(0);
   const [editing, setEditing] = useState(false);
@@ -139,6 +158,24 @@ function Plan() {
       selectedPackage.package_type !== draft.package_type),
   );
   const isTransfer = isTransferBooking(draft);
+  const selectedVehicle = fleet.find((v) => v.id === draft.vehicle_id);
+  const vehicleInvalid =
+    draft.vehicle_choice === "specific" &&
+    (!selectedVehicle || !vehicleFits(selectedVehicle, draft.adults, draft.children));
+  const chooseVehicle = (vehicle: FleetVehicle | null) => {
+    setDraft((old) => {
+      const next = {
+        ...old,
+        vehicle_choice: vehicle ? ("specific" as const) : ("recommend" as const),
+        consent: false,
+      };
+      if (vehicle) next.vehicle_id = vehicle.id;
+      else delete next.vehicle_id;
+      return next;
+    });
+    setErrors({});
+    setError("");
+  };
   const choosePackage = (pkg: TravelPackage) => {
     setDraft((old) => ({
       ...old,
@@ -172,11 +209,15 @@ function Plan() {
       heading.current?.focus({ preventScroll: true });
     });
   };
-  const editStep = (value: number) => moveTo(value, step === 3 || editing);
+  const editStep = (value: number) => moveTo(value, step === 4 || editing);
   const next = () => {
     if (!selectedPackage || packageOutdated) {
       setStep(0);
       setErrors({ experience: "Choose an experience to continue." });
+      return;
+    }
+    if (step === 2 && vehicleInvalid) {
+      setErrors({ vehicle_id: "Choose a vehicle that fits your group, or let RA2 recommend one." });
       return;
     }
     const result = bookingStepSchemas[step]!.safeParse(draft);
@@ -189,12 +230,12 @@ function Plan() {
       requestAnimationFrame(() => document.getElementById(String(issues[0]!.path[0]))?.focus());
       return;
     }
-    moveTo(editing ? 3 : step + 1);
+    moveTo(editing ? 4 : step + 1);
   };
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     if (sending) return;
-    if (step < 3) {
+    if (step < 4) {
       next();
       return;
     }
@@ -205,13 +246,22 @@ function Plan() {
       );
       return;
     }
+    if (vehicleInvalid) {
+      setStep(2);
+      setEditing(true);
+      setErrors({
+        vehicle_id:
+          "Your vehicle is unavailable or too small for the updated group. Please choose again.",
+      });
+      return;
+    }
     const result = bookingSchema.safeParse(draft);
     if (!result.success) {
       const first = result.error.issues[0]!;
       const invalidStep = STEP_FIELDS.findIndex((fields) =>
         (fields as readonly string[]).includes(String(first.path[0])),
       );
-      setStep(invalidStep < 0 ? 3 : invalidStep);
+      setStep(invalidStep < 0 ? 4 : invalidStep);
       setErrors(
         Object.fromEntries(
           result.error.issues.map((issue) => [String(issue.path[0]), issue.message]),
@@ -311,6 +361,20 @@ function Plan() {
             </p>
           </div>
         </div>
+        <div className="flex gap-3">
+          <Car className="mt-0.5 size-4 shrink-0 text-gold" />
+          <div className="min-w-0">
+            <p className="text-xs text-muted-foreground">Vehicle preference</p>
+            <p className="break-words text-sm">
+              {draft.vehicle_choice === "specific"
+                ? selectedVehicle?.name || "Please choose again"
+                : "Let RA2 recommend"}
+            </p>
+            {selectedVehicle && (
+              <p className="mt-1 text-xs text-muted-foreground">{selectedVehicle.capacity_label}</p>
+            )}
+          </div>
+        </div>
         {draft.pickup_location && (
           <div className="flex gap-3">
             <MapPin className="mt-0.5 size-4 shrink-0 text-gold" />
@@ -393,7 +457,7 @@ function Plan() {
         </div>
         <div className="grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_21rem] xl:gap-12">
           <div ref={formTop} className="min-w-0 scroll-mt-40">
-            <ol aria-label="Booking progress" className="mb-7 grid grid-cols-4 gap-1 sm:gap-3">
+            <ol aria-label="Booking progress" className="mb-7 grid grid-cols-5 gap-1 sm:gap-3">
               {STEPS.map((title, index) => (
                 <li key={title}>
                   <button
@@ -401,27 +465,32 @@ function Plan() {
                     disabled={index > step || sending}
                     onClick={() => index < step && editStep(index)}
                     aria-current={step === index ? "step" : undefined}
-                    className={`flex w-full flex-col gap-2 border-b-2 pb-4 text-left text-xs sm:text-sm ${index === step ? "border-gold text-primary" : index < step ? "border-primary text-primary" : "border-border text-muted-foreground"}`}
+                    className={`flex w-full min-w-0 flex-col gap-2 border-b-2 pb-4 text-left text-[10px] sm:text-sm ${index === step ? "border-gold text-primary" : index < step ? "border-primary text-primary" : "border-border text-muted-foreground"}`}
                   >
                     <span
                       className={`flex size-8 items-center justify-center rounded-full text-xs font-semibold ${index < step ? "bg-primary text-ivory" : index === step ? "bg-gold text-forest-deep" : "bg-secondary"}`}
                     >
                       {index < step ? <Check className="size-4" /> : `0${index + 1}`}
                     </span>
-                    <span className={index === step ? "font-semibold" : ""}>{title}</span>
+                    <span
+                      className={`max-w-full break-words ${index === step ? "font-semibold" : ""}`}
+                    >
+                      {title}
+                    </span>
                   </button>
                 </li>
               ))}
             </ol>
             <div className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-8">
               <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-gold">
-                Step {step + 1} of 4
+                Step {step + 1} of 5
               </p>
               <h2 ref={heading} tabIndex={-1} className="text-3xl outline-none sm:text-4xl">
                 {
                   [
                     "What’s calling you?",
                     "Let’s plan the details.",
+                    "Choose your ride.",
                     "How can we reach you?",
                     "Everything looking good?",
                   ][step]
@@ -432,6 +501,7 @@ function Plan() {
                   [
                     "Choose an experience. We can always tailor it to you.",
                     "Tell us when you’re travelling and who’s coming along.",
+                    "Pick a vehicle for your group, or let our team recommend the right fit.",
                     "No account needed. Just the details we need to arrange your trip.",
                     "Take a moment to check your request. You can edit any section before sending.",
                   ][step]
@@ -655,6 +725,23 @@ function Plan() {
                 )}
                 {step === 2 && (
                   <>
+                    <VehicleSelection
+                      vehicles={fleet}
+                      choice={draft.vehicle_choice}
+                      selectedId={draft.vehicle_id}
+                      adults={draft.adults}
+                      children={draft.children}
+                      onChoose={chooseVehicle}
+                    />
+                    {errors["vehicle_id"] && (
+                      <p role="alert" className="text-sm text-destructive">
+                        {errors["vehicle_id"]}
+                      </p>
+                    )}
+                  </>
+                )}
+                {step === 3 && (
+                  <>
                     <FormField
                       id="full_name"
                       title="Full name"
@@ -726,7 +813,7 @@ function Plan() {
                     </FormField>
                   </>
                 )}
-                {step === 3 && (
+                {step === 4 && (
                   <>
                     <ReviewSection title="Your experience" onEdit={() => editStep(0)}>
                       <p className="font-semibold text-primary">{draft.experience}</p>
@@ -802,7 +889,26 @@ function Plan() {
                         </div>
                       )}
                     </ReviewSection>
-                    <ReviewSection title="Your contact details" onEdit={() => editStep(2)}>
+                    <ReviewSection title="Your vehicle preference" onEdit={() => editStep(2)}>
+                      <p className="font-semibold text-primary">
+                        {draft.vehicle_choice === "specific"
+                          ? selectedVehicle?.name || "Please choose again"
+                          : "Let RA2 recommend the right vehicle"}
+                      </p>
+                      {selectedVehicle && (
+                        <>
+                          <p className="mt-2 text-sm">{selectedVehicle.capacity_label}</p>
+                          <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                            {selectedVehicle.luggage_guide}
+                          </p>
+                        </>
+                      )}
+                      <p className="mt-3 text-xs text-muted-foreground">
+                        Availability, actual seating and luggage fit are confirmed with your
+                        quotation.
+                      </p>
+                    </ReviewSection>
+                    <ReviewSection title="Your contact details" onEdit={() => editStep(3)}>
                       <dl className="grid gap-4 sm:grid-cols-2">
                         <ReviewItem title="Name" value={draft.full_name} />
                         <ReviewItem title="Email" value={draft.email} />
@@ -853,7 +959,7 @@ function Plan() {
                   <button
                     type="button"
                     className="booking-button-secondary"
-                    onClick={() => moveTo(editing ? 3 : Math.max(step - 1, 0))}
+                    onClick={() => moveTo(editing ? 4 : Math.max(step - 1, 0))}
                     disabled={sending || (step === 0 && !editing)}
                   >
                     <ArrowLeft className="size-4" />
@@ -865,20 +971,20 @@ function Plan() {
                         <Loader2 className="size-4 animate-spin" />
                         Sending request…
                       </>
-                    ) : step === 3 ? (
+                    ) : step === 4 ? (
                       <>
                         Send booking request
                         <ArrowRight className="size-4" />
                       </>
                     ) : (
                       <>
-                        {editing ? "Save & review" : step === 2 ? "Review my request" : "Continue"}
+                        {editing ? "Save & review" : step === 3 ? "Review my request" : "Continue"}
                         <ArrowRight className="size-4" />
                       </>
                     )}
                   </button>
                 </div>
-                {step === 3 && (
+                {step === 4 && (
                   <p className="text-center text-xs text-muted-foreground">
                     No payment needed. No account to create. Just your next adventure.
                   </p>

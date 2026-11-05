@@ -17,6 +17,9 @@ export type Booking = {
   created_at: string;
   updated_at: string;
   experience: string;
+  vehicle_id: string | null;
+  vehicle_preference: "specific" | "recommend" | null;
+  vehicle_snapshot: import("../../supabase/functions/_shared/fleet-schema").VehicleSnapshot | null;
   package_id: string | null;
   package_type: string | null;
   package_snapshot: {

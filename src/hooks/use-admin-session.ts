@@ -57,6 +57,7 @@ export function useAdminSession() {
       queryClient.removeQueries({ queryKey: ["admin-team"] });
       queryClient.removeQueries({ queryKey: ["admin-email-config"] });
       queryClient.removeQueries({ queryKey: ["admin-packages"] });
+      queryClient.removeQueries({ queryKey: ["admin-fleet"] });
     }
   }, [session, role.data, queryClient]);
   return {

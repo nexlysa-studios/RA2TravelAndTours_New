@@ -66,6 +66,11 @@ export function PackageEditor({
   const uploaded = useRef(new Set<string>());
   const persistedUploads = useRef(new Set<string>());
   const mounted = useRef(true);
+  const saving = useRef(false);
+  const cleanUnusedPhotos = () => {
+    const unused = [...uploaded.current].filter((path) => !persistedUploads.current.has(path));
+    if (unused.length) void getSupabase().storage.from("package-images").remove(unused);
+  };
   const values = {
     ...draft,
     ...Object.fromEntries(LIST_KEYS.map((key) => [key, parseLines(lists[key])])),
@@ -92,8 +97,7 @@ export function PackageEditor({
     return () => {
       mounted.current = false;
       window.removeEventListener("beforeunload", protect);
-      const unused = [...uploaded.current].filter((path) => !persistedUploads.current.has(path));
-      if (unused.length) void getSupabase().storage.from("package-images").remove(unused);
+      if (!saving.current) cleanUnusedPhotos();
     };
   }, []);
   const update = <K extends keyof PackageFields>(key: K, value: PackageFields[K]) => {
@@ -219,6 +223,7 @@ export function PackageEditor({
       target?.focus();
       return;
     }
+    saving.current = true;
     setBusy(true);
     try {
       const db = getSupabase();
@@ -256,7 +261,9 @@ export function PackageEditor({
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to save.");
     } finally {
-      setBusy(false);
+      saving.current = false;
+      if (mounted.current) setBusy(false);
+      else cleanUnusedPhotos();
     }
   }
 

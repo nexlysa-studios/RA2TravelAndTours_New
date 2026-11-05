@@ -20,8 +20,9 @@ The browser connection in `src/lib/supabase-public.ts` contains the project URL 
 
 1. Choose an experience.
 2. Enter travel details, dates, party size and transfer information where applicable.
-3. Provide contact information and contact preference.
-4. Review, edit sections, consent and submit.
+3. Choose a fleet vehicle or let RA2 recommend the right fit.
+4. Provide contact information and contact preference.
+5. Review, edit sections, consent and submit.
 
 The `create-booking` Edge Function validates the same schema as the form, applies persistent rate limits and saves the booking plus two email jobs in one database transaction. A request UUID makes retries idempotent. Guests cannot read, insert or update booking or staff tables directly; they can read published packages. A saved request receives a unique `RA2-…` reference; it is not a paid or confirmed trip.
 
@@ -34,6 +35,14 @@ Open **Admin → Packages** to manage the Supabase catalogue. The existing tours
 Admins can create packages, edit content and FAQs, reorder itinerary stops, upload photos, preview changes and publish/pause offerings. Every published package can receive a booking request, and new requests retain a stable package ID, canonical type and snapshot of the package details. Existing bookings are preserved. Transfer validation follows the package type rather than an editable title.
 
 See [the package editing guide](docs/PACKAGES.md) for the owner's step-by-step instructions. Package management does not change email secrets or the current notification inbox.
+
+## Editable fleet
+
+Open **Admin → Fleet** to add/edit vehicles, upload photos, publish/pause choices or remove them from the active fleet. The ten supplied fleet images are in the `fleet-images` storage bucket and vehicle details are stored in `fleet_vehicles`. Public pages and the vehicle booking step read the published catalogue.
+
+Guest capacity excludes the driver and counts children. The bus's guest-seat count is intentionally unconfirmed. Selected vehicles are validated in the database and recorded as immutable booking snapshots, then included in both email templates and admin booking details. Removed vehicles are archived to preserve that history.
+
+See [the fleet editing guide](docs/FLEET.md). Fleet editing does not change the email notification recipient or Resend configuration.
 
 ## Staff and database access
 

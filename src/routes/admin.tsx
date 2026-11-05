@@ -19,11 +19,13 @@ import {
   ShieldCheck,
   Users,
   PackageOpen,
+  Car,
 } from "lucide-react";
 import { AdminLogin } from "@/components/admin/AdminLogin";
 import { BookingDetails } from "@/components/admin/BookingDetails";
 import { TeamPanel, AccountSettings } from "@/components/admin/TeamPanel";
 import { PackagesPanel } from "@/components/admin/PackagesPanel";
+import { FleetPanel } from "@/components/admin/FleetPanel";
 import { useAdminSession } from "@/hooks/use-admin-session";
 import {
   BOOKING_STATUSES,
@@ -105,7 +107,7 @@ function Dashboard({ userId, email }: { userId: string; email: string }) {
   const { booking: linkedBooking } = Route.useSearch();
   const navigate = Route.useNavigate();
   const queryClient = useQueryClient();
-  const [tab, setTab] = useState<"bookings" | "packages" | "team">("bookings");
+  const [tab, setTab] = useState<"bookings" | "packages" | "fleet" | "team">("bookings");
   const [packageDirty, setPackageDirty] = useState(false);
   const [search, setSearch] = useState("");
   const searchValue = useDeferredValue(search);
@@ -204,6 +206,10 @@ function Dashboard({ userId, email }: { userId: string; email: string }) {
         void queryClient.invalidateQueries({ queryKey: ["admin-packages"] });
         void queryClient.invalidateQueries({ queryKey: ["public-packages"] });
       })
+      .on("postgres_changes", { event: "*", schema: "public", table: "fleet_vehicles" }, () => {
+        void queryClient.invalidateQueries({ queryKey: ["admin-fleet"] });
+        void queryClient.invalidateQueries({ queryKey: ["public-fleet"] });
+      })
       .subscribe();
     return () => {
       void db.removeChannel(channel);
@@ -216,9 +222,9 @@ function Dashboard({ userId, email }: { userId: string; email: string }) {
   };
   async function signOut() {
     if (
-      tab === "packages" &&
+      (tab === "packages" || tab === "fleet") &&
       packageDirty &&
-      !window.confirm("Sign out without saving your package changes?")
+      !window.confirm("Sign out without saving your changes?")
     )
       return;
     const { error } = await getSupabase().auth.signOut();
@@ -251,6 +257,7 @@ function Dashboard({ userId, email }: { userId: string; email: string }) {
         [
           ["bookings", ClipboardList, "Bookings"],
           ["packages", PackageOpen, "Packages"],
+          ["fleet", Car, "Fleet"],
           ["team", Users, "Team & account"],
         ] as const
       ).map(([key, Icon, title]) => (
@@ -259,10 +266,10 @@ function Dashboard({ userId, email }: { userId: string; email: string }) {
           className={`flex shrink-0 items-center gap-3 rounded-lg px-4 py-3 text-sm transition-colors ${tab === key ? "bg-ivory/10 text-gold" : "text-ivory/70 hover:bg-ivory/5 hover:text-ivory"}`}
           onClick={() => {
             if (
-              tab === "packages" &&
+              (tab === "packages" || tab === "fleet") &&
               packageDirty &&
               key !== tab &&
-              !window.confirm("Leave Packages without saving your changes?")
+              !window.confirm("Leave without saving your changes?")
             )
               return;
             setTab(key);
@@ -318,7 +325,9 @@ function Dashboard({ userId, email }: { userId: string; email: string }) {
                   ? "Bookings"
                   : tab === "packages"
                     ? "Packages"
-                    : "Team & account"}
+                    : tab === "fleet"
+                      ? "Fleet"
+                      : "Team & account"}
               </span>
             </div>
             <div className="flex items-center gap-3">
@@ -359,6 +368,8 @@ function Dashboard({ userId, email }: { userId: string; email: string }) {
             <TeamPanel currentUserId={userId} />
           ) : tab === "packages" ? (
             <PackagesPanel onDirtyChange={setPackageDirty} />
+          ) : tab === "fleet" ? (
+            <FleetPanel onDirtyChange={setPackageDirty} />
           ) : (
             <>
               <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
