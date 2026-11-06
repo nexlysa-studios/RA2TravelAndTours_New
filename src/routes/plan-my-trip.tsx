@@ -457,7 +457,10 @@ function Plan() {
         </div>
         <div className="grid items-start gap-7 lg:grid-cols-[minmax(0,1fr)_21rem] xl:gap-12">
           <div ref={formTop} className="min-w-0 scroll-mt-40">
-            <ol aria-label="Booking progress" className="mb-7 grid grid-cols-5 gap-1 sm:gap-3">
+            <ol
+              aria-label="Booking progress"
+              className="mb-5 grid grid-cols-5 gap-0 sm:mb-7 sm:gap-3"
+            >
               {STEPS.map((title, index) => (
                 <li key={title}>
                   <button
@@ -465,7 +468,7 @@ function Plan() {
                     disabled={index > step || sending}
                     onClick={() => index < step && editStep(index)}
                     aria-current={step === index ? "step" : undefined}
-                    className={`flex w-full min-w-0 flex-col gap-2 border-b-2 pb-4 text-left text-[10px] sm:text-sm ${index === step ? "border-gold text-primary" : index < step ? "border-primary text-primary" : "border-border text-muted-foreground"}`}
+                    className={`flex w-full min-w-0 flex-col items-center gap-1 border-b-2 pb-3 text-center text-[10px] leading-tight sm:items-start sm:gap-2 sm:pb-4 sm:text-left sm:text-sm ${index === step ? "border-gold text-primary" : index < step ? "border-primary text-primary" : "border-border text-muted-foreground"}`}
                   >
                     <span
                       className={`flex size-8 items-center justify-center rounded-full text-xs font-semibold ${index < step ? "bg-primary text-ivory" : index === step ? "bg-gold text-forest-deep" : "bg-secondary"}`}
@@ -481,7 +484,7 @@ function Plan() {
                 </li>
               ))}
             </ol>
-            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-8">
+            <div className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-8">
               <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-gold">
                 Step {step + 1} of 5
               </p>

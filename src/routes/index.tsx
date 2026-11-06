@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Compass, MapPinned, HeartHandshake, Instagram } from "lucide-react";
+import { ArrowRight, Check, Compass, MapPinned, HeartHandshake, Instagram } from "lucide-react";
 import hero from "@/assets/hero.jpg";
+import mobileHeroVideo from "@/assets/hero-mobile.mp4";
 import heroVideo from "@/assets/herovid.mp4";
 import peninsula from "@/assets/peninsula.jpg";
 import winelands from "@/assets/winelands.jpg";
 import safari from "@/assets/safari.jpg";
+import google from "@/assets/google.svg";
 import { CONTACT } from "@/lib/site";
 import { publicPackagesOptions } from "@/lib/packages";
 import { CtaBand, GoldButton } from "@/components/site/SiteChrome";
@@ -49,6 +51,25 @@ const WHY = [
   },
 ];
 
+const REVIEWS = [
+  {
+    name: "Henry King",
+    text: "Rezah arranged a driver for the morning to take 6 of us from Cape Town to Boulders Beach, and then out later in the evening. 5* service throughout with quick WhatsApp responses. The van was very comfortable and Allie was exceptional all day. Will be using Ra2 whenever I am back in Cape Town!!",
+  },
+  {
+    name: "Asma",
+    text: "Pleasant guide, he did his best explaining facts of South africa and was generally in a good mood. Which can make ur experience better, thanks a lot",
+  },
+  {
+    name: "nada essam",
+    text: "We are a group of 3 adults and 1 child and we a had successful trip in capetown with Rezah, we enjoyed our time alot, the car is comfy and clean.. Rezah was a super guide provided amazing information. I highly recommend him",
+  },
+  {
+    name: "Marlize White",
+    text: "I've used them for many years and not once did they disappoint. Exceptional service and will always make a plan on short notice. Keep up the greatness",
+  },
+];
+
 function Home() {
   const featured = useSuspenseQuery({
     ...publicPackagesOptions,
@@ -57,13 +78,18 @@ function Home() {
   return (
     <>
       <section className="relative isolate flex min-h-[88vh] items-end overflow-hidden">
-        <img
-          src={hero}
-          alt="Chapman's Peak Drive at sunset"
-          width={1920}
-          height={1088}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster={hero}
+          aria-hidden="true"
           className="absolute inset-0 z-0 h-full w-full object-cover md:hidden"
-        />
+        >
+          <source src={mobileHeroVideo} type="video/mp4" />
+        </video>
         <video
           autoPlay
           muted
@@ -161,35 +187,76 @@ function Home() {
         </div>
       </section>
 
-      <section className="py-24">
-        <div className="container-site grid items-center gap-12 md:grid-cols-2">
-          <div className="flex aspect-[4/5] items-center justify-center rounded-md bg-muted p-8 text-center text-muted-foreground ring-1 ring-border">
-            Photograph of Rezah and the RA2 team — to be supplied
-          </div>
-          <div>
-            <p className="eyebrow mb-3">The people behind RA2</p>
-            <h2 className="text-4xl md:text-5xl">Personally hosted by Rezah Payne.</h2>
-            <p className="mt-5 text-muted-foreground">
-              RA2 is a Cape Town tour company built around one idea: the person who plans your trip
-              should care how it feels. Rezah and the team handle every enquiry, route and pickup
-              personally.
+      <section className="bg-forest-deep py-20 text-ivory md:py-24">
+        <div className="container-site grid items-center gap-10 md:grid-cols-[minmax(0,1fr)_auto] md:gap-16">
+          <div className="max-w-2xl">
+            <p className="eyebrow mb-3">Your trip starts here</p>
+            <h2 className="text-4xl md:text-5xl">Have a date in mind? Let’s make it a journey.</h2>
+            <p className="mt-5 max-w-xl text-ivory/80">
+              Tell Rezah what you’d love to see. The RA2 team will personally help shape your plans
+              and prepare a quote around your trip.
             </p>
-            <div className="mt-8">
-              <GoldButton to="/about" variant="dark">
-                Meet the team
-              </GoldButton>
-            </div>
+            <ul className="mt-6 grid gap-3 text-sm text-ivory/85 sm:grid-cols-2">
+              <li className="flex items-center gap-2">
+                <Check className="size-4 shrink-0 text-gold" />A plan shaped around you
+              </li>
+              <li className="flex items-center gap-2">
+                <Check className="size-4 shrink-0 text-gold" />
+                No payment to get started
+              </li>
+            </ul>
+          </div>
+          <div className="flex flex-col items-stretch gap-3 sm:flex-row md:flex-col">
+            <GoldButton to="/plan-my-trip">
+              Start planning your trip
+              <ArrowRight className="size-4" />
+            </GoldButton>
+            <GoldButton href={CONTACT.whatsapp} variant="outline">
+              Prefer to chat? WhatsApp us
+            </GoldButton>
           </div>
         </div>
       </section>
 
       <section className="bg-forest-deep py-24 text-ivory">
-        <div className="container-site text-center">
-          <p className="eyebrow mb-3">Guest reviews</p>
-          <blockquote className="mx-auto max-w-3xl font-serif text-3xl italic leading-snug md:text-4xl">
-            "Verified guest reviews will appear here, each linked to its original source."
-          </blockquote>
-          <p className="mt-6 text-sm text-ivory/60">Awaiting approved reviews from RA2</p>
+        <div className="container-site">
+          <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="eyebrow mb-3">Guest reviews</p>
+              <h2 className="text-4xl md:text-5xl">Good journeys, remembered.</h2>
+            </div>
+            <a
+              href="https://share.google/Ea76q5olCfRNVfVcp"
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-semibold text-ivory underline decoration-gold underline-offset-4 transition-colors hover:text-gold"
+            >
+              Read more on Google
+            </a>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {REVIEWS.map((review) => (
+              <article
+                key={review.name}
+                className="flex h-full flex-col rounded-md bg-card p-5 text-card-foreground shadow-sm sm:p-6"
+              >
+                <div
+                  role="img"
+                  aria-label="5 out of 5 stars"
+                  className="mb-4 text-xl leading-none tracking-[0.16em] text-yellow-500"
+                >
+                  ★★★★★
+                </div>
+                <blockquote className="flex-1 text-sm leading-relaxed text-muted-foreground">
+                  “{review.text}”
+                </blockquote>
+                <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
+                  <p className="text-sm font-semibold">{review.name}</p>
+                  <img src={google} alt="Google" className="size-5" />
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
