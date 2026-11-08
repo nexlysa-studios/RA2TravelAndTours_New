@@ -6,7 +6,11 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: "About RA2 — Rezah Payne & Team | RA2 Travel and Tours" },
-      { name: "description", content: "Meet Rezah Payne and the team behind RA2 Travel and Tours in Cape Town." },
+      {
+        name: "description",
+        content:
+          "RA2 Travel and Tours is a Cape Town tour operator offering private tours, safaris, airport transfers and personalized travel across South Africa.",
+      },
       { property: "og:title", content: "About RA2 Travel and Tours" },
       { property: "og:description", content: "The people behind your journey." },
     ],
@@ -23,8 +27,20 @@ function Page() {
           <div className="flex aspect-[4/5] items-center justify-center rounded-md bg-muted p-8 text-center text-muted-foreground ring-1 ring-border">Photograph of Rezah — to be supplied</div>
           <div className="space-y-5 text-lg">
             <h2 className="text-4xl">Hello, I'm Rezah.</h2>
-            <p className="text-muted-foreground">RA2 began with a simple belief: the best way to experience South Africa is with someone who knows it and cares how your day feels.</p>
-            <p className="text-muted-foreground">Our story, team and verified facts will be completed with content approved by RA2.</p>
+            <p className="text-muted-foreground">
+              RA2 Travel and Tours is a professional tour operator based in Cape Town, South Africa,
+              offering unforgettable private tours, safaris, and travel experiences. We specialize
+              in guided Cape Town day tours, Cape Peninsula tours, Table Mountain visits, Boulders
+              Beach penguin tours, wine tasting experiences, and luxury helicopter flights. Our
+              popular experiences include safaris to Aquila Game Reserve, Cape Point and Cape of
+              Good Hope tours, Bo-Kaap cultural visits, and private city tours.
+            </p>
+            <p className="text-muted-foreground">
+              We also provide reliable airport transfers and personalized multi-day travel
+              packages across South Africa. At RA2 Travel and Tours, we focus on small groups and
+              private experiences, ensuring every guest enjoys a comfortable, safe, and memorable
+              journey.
+            </p>
           </div>
         </div>
       </section>

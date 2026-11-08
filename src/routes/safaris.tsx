@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import hero from "@/assets/safari.jpg";
+import aquilaSafariDay from "@/assets/aquila-safari-day.webp";
+import krugerSafari from "@/assets/kruger-safari.jpg";
+import sabiSandsSafari from "@/assets/sabi-sands-safari.jpg";
 import { CtaBand, PageHero } from "@/components/site/SiteChrome";
 import { TourCardView } from "@/components/site/TourCardView";
 import { publicPackagesOptions } from "@/lib/packages";
@@ -37,9 +40,29 @@ function Page() {
       />
       <section className="py-20">
         <div className="container-site grid gap-6 md:grid-cols-3">
-          {safaris.map((s) => (
-            <TourCardView key={s.id} tour={s} />
-          ))}
+          {safaris.map((s) => {
+            const tour =
+              s.slug === "aquila"
+                ? {
+                    ...s,
+                    image_url: aquilaSafariDay,
+                    image_alt: "Aquila safari vehicle near rhinos in the reserve",
+                  }
+                : s.slug === "kruger"
+                  ? {
+                      ...s,
+                      image_url: krugerSafari,
+                      image_alt: "Elephants beside a waterhole in Kruger National Park",
+                    }
+                  : s.slug === "sabi-sands"
+                    ? {
+                        ...s,
+                        image_url: sabiSandsSafari,
+                        image_alt: "Safari lodge dining deck beside a river in Sabi Sands",
+                      }
+                  : s;
+            return <TourCardView key={s.id} tour={tour} />;
+          })}
           {!safaris.length && (
             <p className="text-muted-foreground md:col-span-3">
               We’re updating our safari options. Contact us to plan your stay.
