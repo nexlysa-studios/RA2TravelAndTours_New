@@ -13,8 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as PlanMyTripRouteImport } from './routes/plan-my-trip'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as SafarisRouteImport } from './routes/safaris'
 import { Route as TailorMadeRouteImport } from './routes/tailor-made'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TransfersRouteImport } from './routes/transfers'
 import { Route as ToursIndexRouteImport } from './routes/tours.index'
 import { Route as ToursSlugRouteImport } from './routes/tours.$slug'
@@ -40,6 +42,11 @@ const PlanMyTripRoute = PlanMyTripRouteImport.update({
   path: '/plan-my-trip',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SafarisRoute = SafarisRouteImport.update({
   id: '/safaris',
   path: '/safaris',
@@ -48,6 +55,11 @@ const SafarisRoute = SafarisRouteImport.update({
 const TailorMadeRoute = TailorMadeRouteImport.update({
   id: '/tailor-made',
   path: '/tailor-made',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TransfersRoute = TransfersRouteImport.update({
@@ -76,8 +88,10 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/plan-my-trip': typeof PlanMyTripRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/safaris': typeof SafarisRoute
   '/tailor-made': typeof TailorMadeRoute
+  '/terms': typeof TermsRoute
   '/transfers': typeof TransfersRoute
   '/tours/$slug': typeof ToursSlugRoute
   '/tours/peninsula': typeof ToursPeninsulaRoute
@@ -88,8 +102,10 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/plan-my-trip': typeof PlanMyTripRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/safaris': typeof SafarisRoute
   '/tailor-made': typeof TailorMadeRoute
+  '/terms': typeof TermsRoute
   '/transfers': typeof TransfersRoute
   '/tours/$slug': typeof ToursSlugRoute
   '/tours/peninsula': typeof ToursPeninsulaRoute
@@ -101,8 +117,10 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/plan-my-trip': typeof PlanMyTripRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
   '/safaris': typeof SafarisRoute
   '/tailor-made': typeof TailorMadeRoute
+  '/terms': typeof TermsRoute
   '/transfers': typeof TransfersRoute
   '/tours/$slug': typeof ToursSlugRoute
   '/tours/peninsula': typeof ToursPeninsulaRoute
@@ -115,8 +133,10 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/plan-my-trip'
+    | '/privacy-policy'
     | '/safaris'
     | '/tailor-made'
+    | '/terms'
     | '/transfers'
     | '/tours/$slug'
     | '/tours/peninsula'
@@ -127,8 +147,10 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/plan-my-trip'
+    | '/privacy-policy'
     | '/safaris'
     | '/tailor-made'
+    | '/terms'
     | '/transfers'
     | '/tours/$slug'
     | '/tours/peninsula'
@@ -139,8 +161,10 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/plan-my-trip'
+    | '/privacy-policy'
     | '/safaris'
     | '/tailor-made'
+    | '/terms'
     | '/transfers'
     | '/tours/$slug'
     | '/tours/peninsula'
@@ -152,8 +176,10 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   PlanMyTripRoute: typeof PlanMyTripRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   SafarisRoute: typeof SafarisRoute
   TailorMadeRoute: typeof TailorMadeRoute
+  TermsRoute: typeof TermsRoute
   TransfersRoute: typeof TransfersRoute
   ToursSlugRoute: typeof ToursSlugRoute
   ToursPeninsulaRoute: typeof ToursPeninsulaRoute
@@ -190,6 +216,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlanMyTripRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/safaris': {
       id: '/safaris'
       path: '/safaris'
@@ -202,6 +235,13 @@ declare module '@tanstack/react-router' {
       path: '/tailor-made'
       fullPath: '/tailor-made'
       preLoaderRoute: typeof TailorMadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/transfers': {
@@ -240,8 +280,10 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   PlanMyTripRoute: PlanMyTripRoute,
+  PrivacyPolicyRoute: PrivacyPolicyRoute,
   SafarisRoute: SafarisRoute,
   TailorMadeRoute: TailorMadeRoute,
+  TermsRoute: TermsRoute,
   TransfersRoute: TransfersRoute,
   ToursSlugRoute: ToursSlugRoute,
   ToursPeninsulaRoute: ToursPeninsulaRoute,
