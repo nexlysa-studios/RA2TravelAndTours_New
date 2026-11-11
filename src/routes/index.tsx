@@ -1,17 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { ArrowRight, Check, Compass, MapPinned, HeartHandshake, Instagram } from "lucide-react";
+import { ArrowRight, Check, Compass, MapPinned, HeartHandshake } from "lucide-react";
 import hero from "@/assets/hero.jpg";
 import mobileHeroVideo from "@/assets/hero-mobile.mp4";
 import heroVideo from "@/assets/herovid.mp4";
-import peninsula from "@/assets/peninsula.jpg";
-import winelands from "@/assets/winelands.jpg";
 import safari from "@/assets/safari.jpg";
 import google from "@/assets/google.svg";
 import { CONTACT } from "@/lib/site";
 import { publicPackagesOptions } from "@/lib/packages";
 import { CtaBand, GoldButton } from "@/components/site/SiteChrome";
 import { TourCardView } from "@/components/site/TourCardView";
+import { GuestMoments } from "@/components/site/GuestMoments";
+import { HomeFaq } from "@/components/site/HomeFaq";
 
 export const Route = createFileRoute("/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(publicPackagesOptions),
@@ -260,39 +260,9 @@ function Home() {
         </div>
       </section>
 
-      <section className="py-24">
-        <div className="container-site">
-          <div className="mb-10 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-            <div>
-              <p className="eyebrow mb-3">Guest moments</p>
-              <h2 className="text-4xl md:text-5xl">Follow our journeys.</h2>
-            </div>
-            <a
-              href={CONTACT.instagram}
-              className="flex items-center gap-2 text-sm font-semibold text-primary hover:underline"
-            >
-              <Instagram className="size-4" />
-              {CONTACT.instagramHandle}
-            </a>
-          </div>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            {[peninsula, winelands, safari, hero].map((src, i) => (
-              <img
-                key={i}
-                src={src}
-                alt=""
-                loading="lazy"
-                className="aspect-square w-full rounded-sm object-cover"
-              />
-            ))}
-          </div>
-          <p className="mt-4 text-sm text-muted-foreground">
-            Guest photographs shared with permission.
-          </p>
-        </div>
-      </section>
-
+      <GuestMoments />
       <CtaBand />
+      <HomeFaq />
     </>
   );
 }

@@ -219,7 +219,7 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <Link to="/tours/peninsula" hash="faq" className="hover:text-gold">
+              <Link to="/" hash="faq" className="hover:text-gold">
                 FAQs
               </Link>
             </li>
@@ -262,8 +262,16 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-ivory/10">
-        <div className="container-site py-6 text-xs text-ivory/60">
-          © {new Date().getFullYear()} RA2 Travel and Tours · www.ra2travelandtours.co.za
+        <div className="container-site flex flex-col gap-4 py-6 text-xs text-ivory/70 md:flex-row md:items-center md:justify-between">
+          <p>© {new Date().getFullYear()} RA2 Travel and Tours · www.ra2travelandtours.co.za</p>
+          <nav aria-label="Legal" className="flex flex-wrap gap-x-6 gap-y-3 pr-16 md:pr-0">
+            <Link to="/privacy-policy" className="transition-colors hover:text-gold">
+              Privacy Policy
+            </Link>
+            <Link to="/terms" className="transition-colors hover:text-gold">
+              Terms & Conditions
+            </Link>
+          </nav>
         </div>
       </div>
     </footer>
