@@ -126,6 +126,41 @@ function RootComponent() {
   const isAdmin = useRouterState({
     select: (state) => state.location.pathname.startsWith("/admin"),
   });
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+
+  useEffect(() => {
+    if (isAdmin || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const sections = Array.from(document.querySelectorAll<HTMLElement>("main section:not(:first-child)"));
+    if (!sections.length) return;
+
+    document.documentElement.classList.add("has-scroll-reveal");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("scroll-revealed");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: "0px 0px -48px 0px" },
+    );
+
+    sections.forEach((section, index) => {
+      section.classList.add("scroll-reveal");
+      section.style.setProperty("--reveal-delay", `${Math.min(index % 3, 2) * 75}ms`);
+      observer.observe(section);
+    });
+
+    return () => {
+      observer.disconnect();
+      sections.forEach((section) => {
+        section.classList.remove("scroll-reveal", "scroll-revealed");
+        section.style.removeProperty("--reveal-delay");
+      });
+    };
+  }, [isAdmin, pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>

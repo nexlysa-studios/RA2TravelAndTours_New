@@ -104,16 +104,16 @@ function Home() {
         </video>
         <div className="hero-scrim absolute inset-0 z-10" />
         <div className="container-site relative z-20 pb-20 pt-40 text-ivory">
-          <p className="eyebrow mb-5">RA2 Travel and Tours · Cape Town</p>
-          <h1 className="max-w-4xl text-5xl md:text-8xl">
+          <p className="hero-entry hero-entry-1 eyebrow mb-5">RA2 Travel and Tours · Cape Town</p>
+          <h1 className="hero-entry hero-entry-2 max-w-4xl text-5xl md:text-8xl">
             Your South Africa.
             <br />
             <em className="font-normal">Beautifully personal.</em>
           </h1>
-          <p className="mt-6 max-w-xl text-lg text-ivory/90">
+          <p className="hero-entry hero-entry-3 mt-6 max-w-xl text-lg text-ivory/90">
             Private Cape Town tours, safaris and tailor-made journeys.
           </p>
-          <div className="mt-9 flex flex-wrap gap-3">
+          <div className="hero-entry hero-entry-4 mt-9 flex flex-wrap gap-3">
             <GoldButton to="/tours">Explore Tours</GoldButton>
             <GoldButton to="/plan-my-trip" variant="outline">
               Plan My Trip

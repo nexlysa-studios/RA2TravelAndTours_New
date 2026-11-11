@@ -4,6 +4,7 @@ import { ArrowRight, Menu, X, MessageCircle, Phone, Mail, Instagram } from "luci
 import { CONTACT, NAV } from "@/lib/site";
 import ra2Logo from "@/assets/Ra2logo.png";
 import heroVideo from "@/assets/herovid.mp4";
+import whatsappIcon from "@/assets/whatsapp.svg";
 
 export function Logo() {
   return (
@@ -285,7 +286,7 @@ export function WhatsAppFloat() {
       aria-label="Chat on WhatsApp"
       className="fixed bottom-5 right-5 z-40 flex size-14 items-center justify-center rounded-full bg-whatsapp text-ivory shadow-lg transition-transform hover:scale-105"
     >
-      <MessageCircle className="size-6" />
+      <img src={whatsappIcon} alt="" className="size-10" />
     </a>
   );
 }

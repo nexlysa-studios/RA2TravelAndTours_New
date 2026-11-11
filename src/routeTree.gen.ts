@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ChauffeursRouteImport } from './routes/chauffeurs'
+import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as PlanMyTripRouteImport } from './routes/plan-my-trip'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as SafarisRouteImport } from './routes/safaris'
@@ -41,6 +42,11 @@ const AdminRoute = AdminRouteImport.update({
 const ChauffeursRoute = ChauffeursRouteImport.update({
   id: '/chauffeurs',
   path: '/chauffeurs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlanMyTripRoute = PlanMyTripRouteImport.update({
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/chauffeurs': typeof ChauffeursRoute
+  '/gallery': typeof GalleryRoute
   '/plan-my-trip': typeof PlanMyTripRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/safaris': typeof SafarisRoute
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/chauffeurs': typeof ChauffeursRoute
+  '/gallery': typeof GalleryRoute
   '/plan-my-trip': typeof PlanMyTripRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/safaris': typeof SafarisRoute
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/chauffeurs': typeof ChauffeursRoute
+  '/gallery': typeof GalleryRoute
   '/plan-my-trip': typeof PlanMyTripRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
   '/safaris': typeof SafarisRoute
@@ -142,6 +151,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/chauffeurs'
+    | '/gallery'
     | '/plan-my-trip'
     | '/privacy-policy'
     | '/safaris'
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/chauffeurs'
+    | '/gallery'
     | '/plan-my-trip'
     | '/privacy-policy'
     | '/safaris'
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/admin'
     | '/chauffeurs'
+    | '/gallery'
     | '/plan-my-trip'
     | '/privacy-policy'
     | '/safaris'
@@ -188,6 +200,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   ChauffeursRoute: typeof ChauffeursRoute
+  GalleryRoute: typeof GalleryRoute
   PlanMyTripRoute: typeof PlanMyTripRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
   SafarisRoute: typeof SafarisRoute
@@ -227,6 +240,13 @@ declare module '@tanstack/react-router' {
       path: '/chauffeurs'
       fullPath: '/chauffeurs'
       preLoaderRoute: typeof ChauffeursRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/plan-my-trip': {
@@ -300,6 +320,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   ChauffeursRoute: ChauffeursRoute,
+  GalleryRoute: GalleryRoute,
   PlanMyTripRoute: PlanMyTripRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
   SafarisRoute: SafarisRoute,

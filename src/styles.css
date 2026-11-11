@@ -100,6 +100,43 @@
   @media (min-width: 768px) { padding-inline: 2rem; }
 }
 
+@keyframes reveal-rise {
+  from { opacity: 0; transform: translate3d(0, 24px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes hero-enter {
+  from { opacity: 0; transform: translate3d(0, 18px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+.hero-entry { animation: hero-enter 800ms cubic-bezier(0.2, 0.75, 0.25, 1) both; }
+.hero-entry-1 { animation-delay: 120ms; }
+.hero-entry-2 { animation-delay: 240ms; }
+.hero-entry-3 { animation-delay: 390ms; }
+.hero-entry-4 { animation-delay: 520ms; }
+
+html.has-scroll-reveal .scroll-reveal:not(.scroll-revealed) {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+}
+
+html.has-scroll-reveal .scroll-reveal.scroll-revealed {
+  animation: reveal-rise 700ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .hero-entry { opacity: 1; transform: none; animation: none; }
+  html.has-scroll-reveal .scroll-reveal,
+  html.has-scroll-reveal .scroll-reveal.scroll-revealed {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
+
 @utility hero-scrim {
   background: linear-gradient(180deg, color-mix(in oklab, var(--forest-deep) 55%, transparent) 0%, color-mix(in oklab, var(--forest-deep) 15%, transparent) 40%, color-mix(in oklab, var(--forest-deep) 80%, transparent) 100%);
 }
