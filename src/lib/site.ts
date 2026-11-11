@@ -11,6 +11,7 @@ export const NAV = [
   { to: "/tours", label: "Private Tours" },
   { to: "/tailor-made", label: "Tailor-made Journeys" },
   { to: "/safaris", label: "Safaris" },
-  { to: "/transfers", label: "Transfers & Chauffeur" },
+  { to: "/transfers", label: "Transfers" },
+  { to: "/chauffeurs", label: "Chauffeurs" },
   { to: "/about", label: "About RA2" },
 ] as const;

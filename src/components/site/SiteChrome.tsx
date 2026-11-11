@@ -67,6 +67,13 @@ export function Header() {
       <div className="container-site flex h-32 items-center justify-between gap-6">
         <Logo />
         <nav className="hidden items-center gap-7 lg:flex">
+          <Link
+            to="/"
+            className="text-sm text-ivory/85 transition-colors hover:text-gold"
+            activeProps={{ className: "text-gold" }}
+          >
+            Home
+          </Link>
           {NAV.map((n) => (
             <Link
               key={n.to}
@@ -120,13 +127,24 @@ export function Header() {
           className="container-site flex flex-1 flex-col justify-center py-8"
         >
           <p className="eyebrow mb-5">Explore RA2</p>
+          <Link
+            to="/"
+            onClick={() => setOpen(false)}
+            className="group flex items-center justify-between border-b border-ivory/15 py-4 font-serif text-3xl text-ivory transition-colors hover:text-gold sm:text-4xl"
+          >
+            Home
+            <ArrowRight
+              aria-hidden="true"
+              className="size-5 -translate-x-2 text-gold opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100"
+            />
+          </Link>
           {NAV.map((n, index) => (
             <Link
               key={n.to}
               to={n.to}
               onClick={() => setOpen(false)}
               className="group flex items-center justify-between border-b border-ivory/15 py-4 font-serif text-3xl text-ivory transition-colors hover:text-gold sm:text-4xl"
-              style={{ transitionDelay: open ? `${index * 45}ms` : "0ms" }}
+              style={{ transitionDelay: open ? `${(index + 1) * 45}ms` : "0ms" }}
             >
               {n.label}
               <ArrowRight
@@ -171,7 +189,7 @@ export function Footer() {
             Experiences
           </h4>
           <ul className="space-y-2 text-sm">
-            {NAV.slice(0, 4).map((n) => (
+            {NAV.slice(0, 5).map((n) => (
               <li key={n.to}>
                 <Link to={n.to} className="hover:text-gold">
                   {n.label}
