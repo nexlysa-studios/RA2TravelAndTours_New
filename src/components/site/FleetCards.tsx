@@ -3,13 +3,14 @@ import { useState } from "react";
 import { Car, Check, ChevronRight, Users } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { VEHICLE_CATEGORY_LABELS, vehicleFits, type FleetVehicle } from "@/lib/fleet";
+import { CONTACT } from "@/lib/site";
 
 export function FleetCard({
   vehicle: v,
   package: pkg,
 }: {
   vehicle: FleetVehicle;
-  package?: { id: string; name: string } | undefined;
+  package?: { id: string; name: string } | null | undefined;
 }) {
   return (
     <article className="flex min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-card">
@@ -33,14 +34,23 @@ export function FleetCard({
             {v.luggage_guide}
           </p>
         )}
-        <Link
-          to="/plan-my-trip"
-          search={{ vehicle: v.id, ...(pkg ? { package: pkg.id, experience: pkg.name } : {}) }}
-          className="booking-button mt-5"
-        >
-          Choose this vehicle
-          <ChevronRight className="size-4" />
-        </Link>
+        {pkg === null ? (
+          <a
+            href={`${CONTACT.whatsapp}?text=${encodeURIComponent(`Hi RA2, please help arrange a ${v.name} for my trip.`)}`}
+            className="booking-button mt-5"
+          >
+            Ask about this vehicle
+          </a>
+        ) : (
+          <Link
+            to="/plan-my-trip"
+            search={{ vehicle: v.id, ...(pkg ? { package: pkg.id, experience: pkg.name } : {}) }}
+            className="booking-button mt-5"
+          >
+            Choose this vehicle
+            <ChevronRight className="size-4" />
+          </Link>
+        )}
       </div>
     </article>
   );

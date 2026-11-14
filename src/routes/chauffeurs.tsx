@@ -3,7 +3,9 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { ArrowRight, CalendarDays, CalendarRange, Clock3, MapPinned, Sparkles } from "lucide-react";
 import { GoldButton } from "@/components/site/SiteChrome";
 import { FleetCard } from "@/components/site/FleetCards";
+import { ServiceBookingLink } from "@/components/site/ServiceBookingLink";
 import { publicFleetOptions } from "@/lib/fleet";
+import { publicPackagesOptions } from "@/lib/packages";
 import { CONTACT } from "@/lib/site";
 import chauffeur from "@/assets/Fleet (5).JPG";
 import businessMeetings from "@/assets/Business & Meetings.webp";
@@ -12,7 +14,13 @@ import eventsSpecialOccasions from "@/assets/Events & Special Occasions.webp";
 import coast from "@/assets/peninsula.jpg";
 
 export const Route = createFileRoute("/chauffeurs")({
-  loader: ({ context }) => context.queryClient.ensureQueryData(publicFleetOptions),
+  loader: async ({ context }) => {
+    const [fleet, packages] = await Promise.all([
+      context.queryClient.ensureQueryData(publicFleetOptions),
+      context.queryClient.ensureQueryData(publicPackagesOptions),
+    ]);
+    return { fleet, packages };
+  },
   head: () => ({
     meta: [
       { title: "Private Chauffeur Services | RA2 Travel and Tours" },
@@ -27,8 +35,17 @@ export const Route = createFileRoute("/chauffeurs")({
 });
 
 function Page() {
-  const initialFleet = Route.useLoaderData();
-  const fleet = useSuspenseQuery({ ...publicFleetOptions, initialData: initialFleet }).data;
+  const data = Route.useLoaderData();
+  const fleet = useSuspenseQuery({ ...publicFleetOptions, initialData: data.fleet }).data;
+  const primary = useSuspenseQuery({
+    ...publicPackagesOptions,
+    initialData: data.packages,
+  }).data.find(
+    (p) =>
+      p.package_type === "transfer" &&
+      p.transport_service === "chauffeur" &&
+      p.show_on_category_page,
+  );
 
   return (
     <main className="bg-ivory">
@@ -53,9 +70,13 @@ function Page() {
               A dedicated vehicle and driver for the time you book, around the day you have planned.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <GoldButton to="/plan-my-trip">
+              <ServiceBookingLink
+                pkg={primary}
+                service="chauffeur"
+                className="booking-button bg-gold text-forest-deep hover:bg-ivory"
+              >
                 Plan My Chauffeur Service <ArrowRight className="size-4" />
-              </GoldButton>
+              </ServiceBookingLink>
               <GoldButton href={CONTACT.whatsapp} variant="outline">
                 Ask us on WhatsApp
               </GoldButton>
@@ -179,12 +200,13 @@ function Page() {
             <EnquiryDetail icon={Sparkles} label="Personal arrangements" />
             <EnquiryDetail icon={Clock3} label="Hours & timing" />
           </ul>
-          <Link
-            to="/plan-my-trip"
+          <ServiceBookingLink
+            pkg={primary}
+            service="chauffeur"
             className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-md bg-gold px-5 py-3 font-semibold text-forest-deep transition hover:bg-[#c5a452]"
           >
             Start your enquiry <ArrowRight className="size-4" />
-          </Link>
+          </ServiceBookingLink>
           <p className="mt-3 text-center text-xs text-muted-foreground">
             Your enquiry starts a conversation. Availability and final arrangements are confirmed
             with your quotation.
@@ -202,7 +224,7 @@ function Page() {
         {fleet.length > 0 ? (
           <div className="mt-7 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {fleet.map((vehicle) => (
-              <FleetCard key={vehicle.id} vehicle={vehicle} />
+              <FleetCard key={vehicle.id} vehicle={vehicle} package={primary || null} />
             ))}
           </div>
         ) : (

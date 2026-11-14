@@ -1,8 +1,25 @@
 import type { BookingInput } from "./booking-schema.ts";
-import { formatTravelDate, isTransferBooking } from "./booking-schema.ts";
+import {
+  formatTravelDate,
+  isTransferBooking,
+  isChauffeurBooking,
+  CHAUFFEUR_DURATION_LABELS,
+} from "./booking-schema.ts";
 import type { VehicleSnapshot } from "./fleet-schema.ts";
 
-export type EmailBooking = Omit<BookingInput, "consent" | "travel_date"> & {
+export type EmailBooking = Omit<
+  BookingInput,
+  | "consent"
+  | "travel_date"
+  | "transport_service"
+  | "chauffeur_duration"
+  | "service_end_date"
+  | "planned_stops"
+> & {
+  transport_service?: "transfer" | "chauffeur" | null | undefined;
+  chauffeur_duration?: "half_day" | "full_day" | "multi_day" | null | undefined;
+  service_end_date?: string | null | undefined;
+  planned_stops?: string | null | undefined;
   id: string;
   reference: string;
   travel_date: string | null;
@@ -43,6 +60,29 @@ export function bookingEmail(b: EmailBooking, audience: "guest" | "admin", siteU
   if (b.pickup_time) rows.push(["Pickup time", `${b.pickup_time} (South African time, UTC+2)`]);
   if (b.flight_number) rows.push(["Flight", b.flight_number]);
   if (isTransferBooking(b)) rows.push(["Luggage", `${b.luggage} pieces`]);
+  if (b.transport_service)
+    rows.push([
+      "Service",
+      isChauffeurBooking(b) ? "Private chauffeur service" : "Point-to-point transfer",
+    ]);
+  if (isChauffeurBooking(b)) {
+    rows.push([
+      "Service duration",
+      b.chauffeur_duration ? CHAUFFEUR_DURATION_LABELS[b.chauffeur_duration] : "To be arranged",
+    ]);
+    if (b.chauffeur_duration === "multi_day")
+      rows.push([
+        "Service end date",
+        b.flexible_dates
+          ? "Flexible / to be arranged"
+          : formatTravelDate(b.service_end_date || null),
+      ]);
+    rows.push(["Planned stops or route", b.planned_stops || "To be arranged"]);
+    rows.push([
+      "Chauffeur arrangements",
+      "Hours, route, mileage, waiting time and any overtime are agreed with your quotation.",
+    ]);
+  }
   if (b.special_requests) rows.push(["Additional details", b.special_requests]);
   if (b.vehicle_preference === "specific" && b.vehicle_snapshot) {
     rows.push(

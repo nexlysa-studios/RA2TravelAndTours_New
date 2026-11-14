@@ -16,6 +16,9 @@ import {
   BOOKING_STATUSES,
   STATUS_LABELS,
   formatTravelDate,
+  isTransferBooking,
+  isChauffeurBooking,
+  CHAUFFEUR_DURATION_LABELS,
   type Booking,
   type BookingStatus,
 } from "@/lib/bookings";
@@ -182,17 +185,51 @@ function BookingDetailBody({ booking: b }: { booking: Booking }) {
         <h3 className="mb-4 text-2xl">Journey details</h3>
         <dl className="grid gap-4 sm:grid-cols-2">
           <Detail label="Pickup" value={b.pickup_location || "To be arranged"} />
-          {(b.package_type
-            ? b.package_type === "transfer"
-            : b.experience === "Transfer / Chauffeur") && (
+          {isTransferBooking(b) && (
             <>
-              <Detail label="Drop-off" value={b.dropoff_location} />
+              <Detail
+                label="Service"
+                value={
+                  isChauffeurBooking(b) ? "Private chauffeur service" : "Point-to-point transfer"
+                }
+              />
+              <Detail label="Drop-off" value={b.dropoff_location || "To be arranged"} />
               <Detail label="Pickup time" value={`${b.pickup_time} SAST (UTC+2)`} />
               <Detail label="Flight" value={b.flight_number || "Not specified"} />
               <Detail label="Luggage" value={`${b.luggage} pieces`} />
             </>
           )}
+          {isChauffeurBooking(b) && (
+            <>
+              <Detail
+                label="Service duration"
+                value={
+                  b.chauffeur_duration
+                    ? CHAUFFEUR_DURATION_LABELS[b.chauffeur_duration]
+                    : "Not supplied"
+                }
+              />
+              {b.chauffeur_duration === "multi_day" && (
+                <Detail
+                  label="Service end date"
+                  value={
+                    b.flexible_dates
+                      ? "Flexible / to be arranged"
+                      : formatTravelDate(b.service_end_date)
+                  }
+                />
+              )}
+            </>
+          )}
         </dl>
+        {isChauffeurBooking(b) && (
+          <div className="mt-4 border-t border-border pt-4">
+            <p className="mb-1 text-xs text-muted-foreground">Planned stops or route</p>
+            <p className="whitespace-pre-wrap break-words text-sm">
+              {b.planned_stops || "To be arranged"}
+            </p>
+          </div>
+        )}
         {b.special_requests && (
           <div className="mt-4 border-t border-border pt-4">
             <p className="mb-1 text-xs text-muted-foreground">Guest’s additional details</p>

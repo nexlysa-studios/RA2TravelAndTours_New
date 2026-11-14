@@ -59,6 +59,24 @@ Deno.serve(async (req) => {
       p_data: booking,
     });
     if (error) {
+      if (error.message.includes("CHAUFFEUR_DETAILS_REQUIRED"))
+        return json(
+          {
+            error:
+              "Please check your chauffeur duration, planned stops, pickup time and multi-day dates.",
+          },
+          400,
+          cors,
+        );
+      if (error.message.includes("SERVICE_CHANGED"))
+        return json(
+          {
+            error:
+              "This service was updated. Refresh the page and choose your experience again before sending your request.",
+          },
+          409,
+          cors,
+        );
       if (error.message.includes("VEHICLE_UNAVAILABLE"))
         return json(
           {

@@ -17,6 +17,10 @@ export type Booking = {
   created_at: string;
   updated_at: string;
   experience: string;
+  transport_service: "transfer" | "chauffeur" | null;
+  chauffeur_duration: "half_day" | "full_day" | "multi_day" | null;
+  service_end_date: string | null;
+  planned_stops: string | null;
   vehicle_id: string | null;
   vehicle_preference: "specific" | "recommend" | null;
   vehicle_snapshot: import("../../supabase/functions/_shared/fleet-schema").VehicleSnapshot | null;

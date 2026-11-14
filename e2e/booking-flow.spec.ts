@@ -33,7 +33,9 @@ test("guest review/edit/submit and admin follow-up work on desktop and mobile", 
     await page.goto("/plan-my-trip");
     await page.getByRole("button", { name: "Continue", exact: true }).click();
     await expect(page.getByRole("alert")).toContainText("Choose an experience");
-    await page.getByRole("radio", { name: /Transfer \/ Chauffeur/ }).check();
+    await page
+      .locator('input[name="experience"][value="00000000-0000-4000-8000-000000000007"]')
+      .check();
     await page.getByRole("button", { name: "Continue", exact: true }).click();
     await page.getByRole("button", { name: "Continue", exact: true }).click();
     await expect(page.getByText("Choose a travel date or select flexible dates.")).toBeVisible();

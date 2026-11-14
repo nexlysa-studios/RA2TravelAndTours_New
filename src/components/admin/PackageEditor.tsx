@@ -305,15 +305,16 @@ export function PackageEditor({
             <EditorField
               id="package-package_type"
               title="Experience type"
-              hint="Transfers always ask for pickup, drop-off and pickup time."
+              hint="For transfers and chauffeur services, choose the booking service below."
             >
               <select
                 id="package-package_type"
                 className="booking-input"
                 value={draft.package_type}
-                onChange={(e) =>
-                  update("package_type", e.target.value as PackageFields["package_type"])
-                }
+                onChange={(e) => {
+                  update("package_type", e.target.value as PackageFields["package_type"]);
+                  if (e.target.value !== "transfer") update("transport_service", "transfer");
+                }}
               >
                 {PACKAGE_TYPES.map((type) => (
                   <option key={type} value={type}>
@@ -322,6 +323,25 @@ export function PackageEditor({
                 ))}
               </select>
             </EditorField>
+            {draft.package_type === "transfer" && (
+              <EditorField
+                id="package-transport-service"
+                title="Booking service"
+                hint="Transfers request a destination. Chauffeur bookings request duration, planned stops and multi-day dates."
+              >
+                <select
+                  id="package-transport-service"
+                  className="booking-input"
+                  value={draft.transport_service}
+                  onChange={(e) =>
+                    update("transport_service", e.target.value as "transfer" | "chauffeur")
+                  }
+                >
+                  <option value="transfer">Point-to-point transfer</option>
+                  <option value="chauffeur">Private chauffeur service</option>
+                </select>
+              </EditorField>
+            )}
             <EditorField
               id="package-slug"
               title="Website address"
@@ -577,7 +597,7 @@ export function PackageEditor({
             />
             <Toggle
               label="Show on its category page"
-              description="Show safaris, journeys or transfers on their matching website section."
+              description="Show safaris, journeys, transfers or chauffeurs on their matching website section."
               checked={draft.show_on_category_page}
               onChange={(value) => update("show_on_category_page", value)}
             />

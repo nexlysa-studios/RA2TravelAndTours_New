@@ -12,6 +12,14 @@ export function todayInSouthAfrica() {
 }
 
 const optionalText = (max: number) => z.string().trim().max(max);
+export const CHAUFFEUR_DURATION_LABELS = {
+  half_day: "Half day",
+  full_day: "Full day",
+  multi_day: "Multi-day",
+} as const;
+export function isChauffeurBooking(data: { transport_service?: string | null | undefined }) {
+  return data.transport_service === "chauffeur";
+}
 export function isTransferBooking(data: {
   experience: string;
   package_type?: string | null | undefined;
@@ -24,6 +32,20 @@ const bookingFields = {
   experience: z.string().trim().min(2, "Choose an experience to continue.").max(140),
   package_id: z.string().uuid().optional(),
   package_type: z.enum(PACKAGE_TYPES).optional(),
+  transport_service: z.enum(["transfer", "chauffeur"]).optional(),
+  chauffeur_duration: z.enum(["half_day", "full_day", "multi_day"]).optional(),
+  service_end_date: z
+    .string()
+    .refine(
+      (v) =>
+        v === "" ||
+        (/^\d{4}-\d{2}-\d{2}$/.test(v) &&
+          !Number.isNaN(Date.parse(`${v}T12:00:00Z`)) &&
+          new Date(`${v}T12:00:00Z`).toISOString().slice(0, 10) === v),
+      "Enter a valid end date.",
+    )
+    .optional(),
+  planned_stops: optionalText(2000).optional(),
   vehicle_choice: z.enum(["specific", "recommend"]).optional(),
   vehicle_id: z.string().uuid().optional(),
   travel_date: z
@@ -79,6 +101,10 @@ function validateTravel(
     pickup_location: string;
     dropoff_location: string;
     pickup_time: string;
+    transport_service?: "transfer" | "chauffeur" | undefined;
+    chauffeur_duration?: "half_day" | "full_day" | "multi_day" | undefined;
+    service_end_date?: string | undefined;
+    planned_stops?: string | undefined;
   },
   ctx: z.RefinementCtx,
 ) {
@@ -90,6 +116,7 @@ function validateTravel(
     });
   if (isTransferBooking(data)) {
     for (const key of ["pickup_location", "dropoff_location"] as const) {
+      if (key === "dropoff_location" && isChauffeurBooking(data)) continue;
       if (data[key].length < 2)
         ctx.addIssue({
           code: "custom",
@@ -103,6 +130,51 @@ function validateTravel(
         path: ["pickup_time"],
         message: "Choose your pickup time (South African time).",
       });
+  }
+  if (isChauffeurBooking(data)) {
+    if (!isTransferBooking(data))
+      ctx.addIssue({
+        code: "custom",
+        path: ["experience"],
+        message: "Choose a chauffeur service experience.",
+      });
+    if (!data.chauffeur_duration)
+      ctx.addIssue({
+        code: "custom",
+        path: ["chauffeur_duration"],
+        message: "Choose half day, full day or multi-day.",
+      });
+    if (!data.planned_stops || data.planned_stops.length < 2)
+      ctx.addIssue({
+        code: "custom",
+        path: ["planned_stops"],
+        message: "Tell us your planned stops or the route you have in mind.",
+      });
+    if (data.chauffeur_duration === "multi_day" && !data.flexible_dates && !data.service_end_date)
+      ctx.addIssue({
+        code: "custom",
+        path: ["service_end_date"],
+        message: "Choose the last date of your chauffeur service.",
+      });
+    if (
+      data.service_end_date &&
+      (data.chauffeur_duration !== "multi_day" ||
+        data.flexible_dates ||
+        data.service_end_date < data.travel_date)
+    )
+      ctx.addIssue({
+        code: "custom",
+        path: ["service_end_date"],
+        message:
+          "Use an end date on or after your start date for a multi-day service, or choose flexible dates.",
+      });
+  } else if (data.chauffeur_duration || data.service_end_date || data.planned_stops) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["experience"],
+      message:
+        "Chauffeur details require a chauffeur service. Please choose your experience again.",
+    });
   }
 }
 
@@ -121,6 +193,10 @@ export const bookingStepSchemas = [
     .object({
       experience: bookingFields.experience,
       package_type: bookingFields.package_type,
+      transport_service: bookingFields.transport_service,
+      chauffeur_duration: bookingFields.chauffeur_duration,
+      service_end_date: bookingFields.service_end_date,
+      planned_stops: bookingFields.planned_stops,
       travel_date: bookingFields.travel_date,
       flexible_dates: bookingFields.flexible_dates,
       adults: bookingFields.adults,
@@ -180,6 +256,9 @@ export const STEP_FIELDS = [
     "flight_number",
     "luggage",
     "special_requests",
+    "chauffeur_duration",
+    "service_end_date",
+    "planned_stops",
   ],
   ["vehicle_choice", "vehicle_id"],
   ["full_name", "email", "phone", "contact_preference"],

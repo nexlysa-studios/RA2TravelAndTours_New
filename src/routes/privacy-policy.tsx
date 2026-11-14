@@ -48,7 +48,8 @@ const SECTIONS: PolicySection[] = [
         <ul>
           <li>Your name, email address, phone number and preferred way to be contacted.</li>
           <li>
-            Your selected experience, dates or date flexibility, and numbers of adults and children.
+            Your selected experience, dates or date flexibility, numbers of adults and children, and
+            chauffeur duration, end date and planned stops where relevant.
           </li>
           <li>
             Pickup and drop-off locations, pickup time, flight number and luggage details where

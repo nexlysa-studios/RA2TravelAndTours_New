@@ -29,6 +29,8 @@ import {
   formatTravelDate,
   initialBooking,
   isTransferBooking,
+  isChauffeurBooking,
+  CHAUFFEUR_DURATION_LABELS,
   STEP_FIELDS,
   todayInSouthAfrica,
   type BookingDraft,
@@ -93,7 +95,7 @@ function FormField({
   required?: boolean;
   error?: string | undefined;
   children: ReactNode;
-  hint?: string;
+  hint?: string | undefined;
 }) {
   return (
     <div>
@@ -135,7 +137,15 @@ function Plan() {
   const [draft, setDraft] = useState<BookingDraft>({
     ...initialBooking,
     experience: preselected?.name || "",
-    ...(preselected ? { package_id: preselected.id, package_type: preselected.package_type } : {}),
+    ...(preselected
+      ? {
+          package_id: preselected.id,
+          package_type: preselected.package_type,
+          ...(preselected.package_type === "transfer"
+            ? { transport_service: preselected.transport_service }
+            : {}),
+        }
+      : {}),
     ...(preselectedVehicle
       ? { vehicle_choice: "specific", vehicle_id: preselectedVehicle.id }
       : {}),
@@ -155,9 +165,12 @@ function Plan() {
     draft.package_id &&
     (!selectedPackage ||
       selectedPackage.name !== draft.experience ||
-      selectedPackage.package_type !== draft.package_type),
+      selectedPackage.package_type !== draft.package_type ||
+      (selectedPackage.package_type === "transfer" &&
+        selectedPackage.transport_service !== draft.transport_service)),
   );
   const isTransfer = isTransferBooking(draft);
+  const isChauffeur = isChauffeurBooking(draft);
   const selectedVehicle = fleet.find((v) => v.id === draft.vehicle_id);
   const vehicleInvalid =
     draft.vehicle_choice === "specific" &&
@@ -182,6 +195,10 @@ function Plan() {
       experience: pkg.name,
       package_id: pkg.id,
       package_type: pkg.package_type,
+      transport_service: pkg.package_type === "transfer" ? pkg.transport_service : undefined,
+      chauffeur_duration: undefined,
+      service_end_date: undefined,
+      planned_stops: undefined,
       consent: false,
       ...(old.package_type === "transfer" && pkg.package_type !== "transfer"
         ? { dropoff_location: "", pickup_time: "", flight_number: "", luggage: 0 }
@@ -191,7 +208,15 @@ function Plan() {
     setError("");
   };
   const update = <K extends keyof BookingDraft>(key: K, value: BookingDraft[K]) => {
-    setDraft((old) => ({ ...old, [key]: value, ...(key !== "consent" ? { consent: false } : {}) }));
+    setDraft((old) => ({
+      ...old,
+      [key]: value,
+      ...(key !== "consent" ? { consent: false } : {}),
+      ...((key === "chauffeur_duration" && value !== "multi_day") ||
+      (key === "flexible_dates" && value === true)
+        ? { service_end_date: undefined }
+        : {}),
+    }));
     setErrors((old) => {
       const next = { ...old };
       delete next[key];
@@ -327,6 +352,11 @@ function Plan() {
         <div className="border-b border-border pb-5">
           <p className="text-xs text-muted-foreground">Experience</p>
           <p className="mt-1 font-semibold">{draft.experience || "Your adventure awaits"}</p>
+          {isTransfer && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              {isChauffeur ? "Private chauffeur service" : "Point-to-point transfer"}
+            </p>
+          )}
           {draft.experience && step > 0 && (
             <button
               type="button"
@@ -345,6 +375,14 @@ function Plan() {
             <p className="text-sm">
               {draft.flexible_dates ? "Flexible dates" : formatTravelDate(draft.travel_date)}
             </p>
+            {isChauffeur && draft.chauffeur_duration && (
+              <p className="mt-1 text-sm">
+                {CHAUFFEUR_DURATION_LABELS[draft.chauffeur_duration]}
+                {draft.service_end_date
+                  ? ` · until ${formatTravelDate(draft.service_end_date)}`
+                  : ""}
+              </p>
+            )}
             {draft.pickup_time && (
               <p className="text-xs text-muted-foreground">
                 {draft.pickup_time} · South African time
@@ -582,7 +620,11 @@ function Plan() {
                 {step === 1 && (
                   <>
                     <div className="grid gap-5 sm:grid-cols-2">
-                      <FormField id="travel_date" title="Travel date" error={errors["travel_date"]}>
+                      <FormField
+                        id="travel_date"
+                        title={isChauffeur ? "Service start date" : "Travel date"}
+                        error={errors["travel_date"]}
+                      >
                         <input
                           {...inputProps("travel_date")}
                           type="date"
@@ -631,7 +673,11 @@ function Plan() {
                       <div className="sm:col-span-2">
                         <p className="flex items-center gap-2 text-sm font-semibold">
                           <MapPin className="size-4 text-gold" />
-                          {isTransfer ? "Your transfer" : "Pickup & preferences"}
+                          {isChauffeur
+                            ? "Your chauffeur service"
+                            : isTransfer
+                              ? "Your transfer"
+                              : "Pickup & preferences"}
                         </p>
                         <p className="mt-1 text-xs text-muted-foreground">
                           {isTransfer
@@ -658,8 +704,13 @@ function Plan() {
                           <FormField
                             id="dropoff_location"
                             title="Drop-off location"
-                            required
+                            required={!isChauffeur}
                             error={errors["dropoff_location"]}
+                            hint={
+                              isChauffeur
+                                ? "Optional final destination; add the route and stops below."
+                                : undefined
+                            }
                           >
                             <input
                               {...inputProps("dropoff_location")}
@@ -709,6 +760,81 @@ function Plan() {
                         </>
                       )}
                     </div>
+                    {isChauffeur && (
+                      <div className="space-y-5 rounded-xl border border-gold/40 p-4 sm:p-5">
+                        <div>
+                          <h3 className="text-2xl">Plan your time with us.</h3>
+                          <p className="mt-2 text-sm text-muted-foreground">
+                            Hours, mileage, waiting time and overtime will be agreed in your quote.
+                          </p>
+                        </div>
+                        <div className="grid gap-5 sm:grid-cols-2">
+                          <FormField
+                            id="chauffeur_duration"
+                            title="Service duration"
+                            required
+                            error={errors["chauffeur_duration"]}
+                          >
+                            <select
+                              {...inputProps("chauffeur_duration")}
+                              value={draft.chauffeur_duration || ""}
+                              onChange={(e) =>
+                                update(
+                                  "chauffeur_duration",
+                                  (e.target.value ||
+                                    undefined) as BookingDraft["chauffeur_duration"],
+                                )
+                              }
+                            >
+                              <option value="">Choose your duration</option>
+                              {Object.entries(CHAUFFEUR_DURATION_LABELS).map(([value, label]) => (
+                                <option key={value} value={value}>
+                                  {label}
+                                </option>
+                              ))}
+                            </select>
+                          </FormField>
+                          {draft.chauffeur_duration === "multi_day" && !draft.flexible_dates && (
+                            <FormField
+                              id="service_end_date"
+                              title="Service end date"
+                              required
+                              error={errors["service_end_date"]}
+                            >
+                              <input
+                                {...inputProps("service_end_date")}
+                                type="date"
+                                min={draft.travel_date || todayInSouthAfrica()}
+                                value={draft.service_end_date || ""}
+                                onChange={(e) => update("service_end_date", e.target.value)}
+                              />
+                            </FormField>
+                          )}
+                        </div>
+                        {draft.chauffeur_duration === "multi_day" && draft.flexible_dates && (
+                          <p className="text-sm text-muted-foreground">
+                            Your date range will be arranged with RA2. Include the approximate
+                            number of days below if you know it.
+                          </p>
+                        )}
+                        <FormField
+                          id="planned_stops"
+                          title="Planned stops or route"
+                          required
+                          error={errors["planned_stops"]}
+                          hint="List your stops in order, with appointment times or overnight locations for a multi-day service. A rough plan is fine."
+                        >
+                          <textarea
+                            {...inputProps("planned_stops")}
+                            rows={4}
+                            maxLength={2000}
+                            value={draft.planned_stops || ""}
+                            placeholder="Hotel → meeting at 10:00 → lunch → hotel"
+                            onChange={(e) => update("planned_stops", e.target.value)}
+                          />
+                        </FormField>
+                      </div>
+                    )}
                     <FormField
                       id="special_requests"
                       title="Anything else we should know?"
@@ -854,7 +980,7 @@ function Plan() {
                     <ReviewSection title="Travel details" onEdit={() => editStep(1)}>
                       <dl className="grid gap-4 sm:grid-cols-2">
                         <ReviewItem
-                          title="Travel date"
+                          title={isChauffeur ? "Service start date" : "Travel date"}
                           value={
                             draft.flexible_dates
                               ? "Flexible / to be arranged"
@@ -870,7 +996,14 @@ function Plan() {
                         )}
                         {isTransfer && (
                           <>
-                            <ReviewItem title="Drop-off" value={draft.dropoff_location} />
+                            <ReviewItem
+                              title="Service"
+                              value={isChauffeur ? "Private chauffeur" : "Point-to-point transfer"}
+                            />
+                            <ReviewItem
+                              title="Drop-off"
+                              value={draft.dropoff_location || "To be arranged"}
+                            />
                             <ReviewItem
                               title="Pickup time"
                               value={`${draft.pickup_time} (South African time)`}
@@ -883,6 +1016,34 @@ function Plan() {
                           </>
                         )}
                       </dl>
+                      {isChauffeur && (
+                        <div className="mt-4 space-y-3 border-t border-border pt-4">
+                          <ReviewItem
+                            title="Service duration"
+                            value={
+                              draft.chauffeur_duration
+                                ? CHAUFFEUR_DURATION_LABELS[draft.chauffeur_duration]
+                                : "Please choose a duration"
+                            }
+                          />
+                          {draft.chauffeur_duration === "multi_day" && (
+                            <ReviewItem
+                              title="Service end date"
+                              value={
+                                draft.flexible_dates
+                                  ? "Flexible / to be arranged"
+                                  : formatTravelDate(draft.service_end_date || null)
+                              }
+                            />
+                          )}
+                          <div>
+                            <p className="text-xs text-muted-foreground">Planned stops or route</p>
+                            <p className="mt-1 whitespace-pre-wrap break-words text-sm">
+                              {draft.planned_stops}
+                            </p>
+                          </div>
+                        </div>
+                      )}
                       {draft.special_requests && (
                         <div className="mt-4 border-t border-border pt-4">
                           <p className="text-xs text-muted-foreground">Additional details</p>

@@ -20,6 +20,7 @@ export const packageFieldsSchema = z.object({
     .min(2)
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase words separated by hyphens."),
   package_type: z.enum(PACKAGE_TYPES),
+  transport_service: z.enum(["transfer", "chauffeur"]).default("transfer"),
   subtitle: text(180),
   tagline: text(300),
   summary: text(500),
@@ -72,6 +73,13 @@ export const packageFieldsSchema = z.object({
 });
 
 export const packageSchema = packageFieldsSchema.superRefine((value, ctx) => {
+  if (value.transport_service === "chauffeur" && value.package_type !== "transfer") {
+    ctx.addIssue({
+      code: "custom",
+      path: ["transport_service"],
+      message: "Chauffeur bookings must use the Transfer / chauffeur experience type.",
+    });
+  }
   if (value.is_published) {
     for (const key of ["summary", "description", "location", "duration"] as const) {
       if (!value[key])
@@ -96,6 +104,7 @@ export function newPackage(): PackageFields {
     name: "",
     slug: "",
     package_type: "tour",
+    transport_service: "transfer",
     subtitle: "",
     tagline: "",
     summary: "",
