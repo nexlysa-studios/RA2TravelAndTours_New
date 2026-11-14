@@ -6,9 +6,10 @@ import { FleetCard } from "@/components/site/FleetCards";
 import { publicFleetOptions } from "@/lib/fleet";
 import { CONTACT } from "@/lib/site";
 import chauffeur from "@/assets/Fleet (5).JPG";
+import businessMeetings from "@/assets/Business & Meetings.webp";
+import shoppingDining from "@/assets/Shopping & Dining.webp";
+import eventsSpecialOccasions from "@/assets/Events & Special Occasions.webp";
 import coast from "@/assets/peninsula.jpg";
-import winelands from "@/assets/winelands.jpg";
-import safari from "@/assets/safari.jpg";
 
 export const Route = createFileRoute("/chauffeurs")({
   loader: ({ context }) => context.queryClient.ensureQueryData(publicFleetOptions),
@@ -33,9 +34,9 @@ function Page() {
     <main className="bg-ivory">
       <section className="relative isolate overflow-hidden bg-forest-deep text-ivory">
         <img
-          src={chauffeur}
-          alt="A chauffeur vehicle ready for a private journey"
-          className="absolute inset-0 -z-20 size-full object-cover object-[center_27%]"
+          src={businessMeetings}
+          alt="A private chauffeur welcoming guests at an evening event"
+          className="absolute inset-0 -z-20 size-full object-cover object-center"
         />
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-forest-deep/95 via-forest-deep/70 to-forest-deep/10" />
         <div className="container-site flex min-h-[360px] items-center py-14 sm:min-h-[420px]">
@@ -94,20 +95,20 @@ function Page() {
         </h2>
         <div className="mt-7 grid gap-4 md:grid-cols-3">
           <ServiceCard
-            image={chauffeur}
-            alt="A private vehicle for a day of business travel"
+            image={businessMeetings}
+            alt="A chauffeur arriving with guests for an evening event"
             title="Business & Meetings"
             copy="Reliable, comfortable transport for meetings, site visits and business arrangements around the city."
           />
           <ServiceCard
-            image={coast}
-            alt="The Cape Peninsula coastline"
+            image={shoppingDining}
+            alt="Guests enjoying chauffeur transport while shopping and dining"
             title="Shopping & Dining"
             copy="A flexible, convenient way to enjoy shopping, restaurants and other personal plans at your own pace."
           />
           <ServiceCard
-            image={winelands}
-            alt="A Cape Winelands estate among vineyards and mountains"
+            image={eventsSpecialOccasions}
+            alt="A chauffeur assisting guests at a hotel"
             title="Events & Special Occasions"
             copy="Stylish, door-to-door transport for events, celebrations and memorable occasions."
           />

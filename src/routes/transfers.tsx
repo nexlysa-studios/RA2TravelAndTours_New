@@ -4,10 +4,10 @@ import { ArrowRight, CalendarDays, CarFront, FileText, Luggage, MapPin, Plane, U
 import { publicFleetOptions } from "@/lib/fleet";
 import { publicPackagesOptions } from "@/lib/packages";
 import { FleetCard } from "@/components/site/FleetCards";
-import airport from "@/assets/hero.jpg";
-import lodge from "@/assets/safari.jpg";
-import coast from "@/assets/peninsula.jpg";
-import van from "@/assets/Fleet (1).JPG";
+import airport from "@/assets/Airport-hotel.webp";
+import lodge from "@/assets/safari-lodge.webp";
+import coast from "@/assets/city-city.webp";
+import van from "@/assets/right-details.webp";
 
 export const Route = createFileRoute("/transfers")({
   loader: async ({ context }) => {
@@ -106,7 +106,7 @@ function Page() {
       <section id="fleet" className="container-site scroll-mt-24 pb-14 sm:pb-16">
         <h2 className="mb-7 text-4xl leading-tight text-forest-deep sm:text-5xl">The right vehicle starts with the right details.</h2>
         <div className="grid items-center gap-6 md:grid-cols-[1.2fr_1fr]">
-          <img src={van} alt="RA2's Toyota Quantum transfer vehicle" className="h-52 w-full rounded-lg object-cover object-top sm:h-64" />
+          <img src={van} alt="RA2 vehicles beside the Cape Town coast at sunset" className="h-52 w-full rounded-lg object-cover object-center sm:h-64" />
           <div className="border-l-2 border-gold py-2 pl-6 text-lg leading-relaxed text-charcoal/85">
             <CarFront className="mb-3 size-8 text-forest" />
             Tell us your passenger numbers, luggage and any child-seat or mobility requirements. We’ll confirm a suitable vehicle and what is included in your quote.
