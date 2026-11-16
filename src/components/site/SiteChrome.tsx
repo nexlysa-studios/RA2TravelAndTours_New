@@ -46,6 +46,14 @@ export function GoldButton({
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const [atTop, setAtTop] = useState(true);
+
+  useEffect(() => {
+    const updateScrollPosition = () => setAtTop(window.scrollY <= 0);
+    updateScrollPosition();
+    window.addEventListener("scroll", updateScrollPosition, { passive: true });
+    return () => window.removeEventListener("scroll", updateScrollPosition);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -64,7 +72,11 @@ export function Header() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-40 bg-forest">
+    <header
+      className={`sticky top-0 z-40 -mb-32 transition-colors duration-300 lg:mb-0 lg:bg-forest ${
+        atTop ? "bg-transparent" : "bg-forest"
+      }`}
+    >
       <div className="container-site flex h-32 items-center justify-between gap-6">
         <Logo />
         <nav className="hidden items-center gap-7 lg:flex">
