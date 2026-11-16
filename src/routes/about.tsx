@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, CalendarDays, CarFront, ClipboardCheck, UsersRound } from "lucide-react";
 import hero from "@/assets/peninsula.jpg";
-import ra2Logo from "@/assets/Ra2logo.png";
+import newAbout from "@/assets/new-about.JPG";
 import { CONTACT } from "@/lib/site";
 import { GoldButton } from "@/components/site/SiteChrome";
 
@@ -146,20 +146,20 @@ function Page() {
 
       <section className="bg-[#f1ece2] py-16 sm:py-20">
         <div className="container-site grid items-center gap-10 md:grid-cols-2 md:gap-12">
-          <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-md border border-gold/30 bg-card p-10 sm:p-16">
+          <figure className="relative aspect-[4/5] overflow-hidden rounded-md border border-gold/30 bg-card">
+            <img
+              src={newAbout}
+              alt="The RA2 family together beside their vehicle at a stadium"
+              width={1200}
+              height={1600}
+              loading="lazy"
+              className="absolute inset-0 size-full object-cover object-center"
+            />
             <div
               aria-hidden="true"
-              className="absolute inset-4 rounded-sm border border-gold/20 sm:inset-6"
+              className="pointer-events-none absolute inset-4 rounded-sm border border-ivory/60 sm:inset-6"
             />
-            <img
-              src={ra2Logo}
-              alt="RA2 Travel and Tours"
-              width={500}
-              height={500}
-              loading="lazy"
-              className="relative w-full max-w-sm object-contain"
-            />
-          </div>
+          </figure>
           <div className="space-y-5 text-lg">
             <h2 className="text-4xl text-forest-deep">Hello, I’m Rezah.</h2>
             <p className="text-muted-foreground">

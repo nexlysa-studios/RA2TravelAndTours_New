@@ -260,6 +260,33 @@ function Home() {
         </div>
       </section>
 
+      <section className="bg-[#f1ece2] py-16 sm:py-20">
+        <div className="container-site">
+          <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+            <div>
+              <p className="eyebrow mb-2">From the RA2 Blog</p>
+              <h2 className="text-4xl text-forest-deep sm:text-5xl">A few good things to know before you go.</h2>
+            </div>
+            <Link to="/blog" className="inline-flex items-center gap-2 text-sm font-semibold text-forest hover:text-[#967332]">
+              Visit the travel blog <ArrowRight className="size-4" />
+            </Link>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {[
+              { title: "When to visit Cape Town", copy: "Find a season that suits your kind of trip.", id: "best-time" },
+              { title: "Staying safe while exploring", copy: "Simple local habits for smoother days out.", id: "travel-safety" },
+              { title: "Plan a Table Mountain day", copy: "What to check and bring before a hike.", id: "mountain-days" },
+            ].map((article) => (
+              <Link key={article.id} to="/blog" hash={article.id} className="group rounded-md border border-gold/30 bg-card p-5 transition-colors hover:border-gold">
+                <h3 className="text-2xl text-forest-deep">{article.title}</h3>
+                <p className="mt-2 text-sm text-charcoal/75">{article.copy}</p>
+                <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-forest group-hover:text-[#967332]">Read the guide <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" /></span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <GuestMoments />
       <CtaBand />
       <HomeFaq />

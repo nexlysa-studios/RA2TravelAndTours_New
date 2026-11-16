@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as BlogRouteImport } from './routes/blog'
 import { Route as ChauffeursRouteImport } from './routes/chauffeurs'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as PlanMyTripRouteImport } from './routes/plan-my-trip'
@@ -37,6 +38,11 @@ const AboutRoute = AboutRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChauffeursRoute = ChauffeursRouteImport.update({
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/blog': typeof BlogRoute
   '/chauffeurs': typeof ChauffeursRoute
   '/gallery': typeof GalleryRoute
   '/plan-my-trip': typeof PlanMyTripRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/blog': typeof BlogRoute
   '/chauffeurs': typeof ChauffeursRoute
   '/gallery': typeof GalleryRoute
   '/plan-my-trip': typeof PlanMyTripRoute
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
+  '/blog': typeof BlogRoute
   '/chauffeurs': typeof ChauffeursRoute
   '/gallery': typeof GalleryRoute
   '/plan-my-trip': typeof PlanMyTripRoute
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/blog'
     | '/chauffeurs'
     | '/gallery'
     | '/plan-my-trip'
@@ -166,6 +176,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/blog'
     | '/chauffeurs'
     | '/gallery'
     | '/plan-my-trip'
@@ -182,6 +193,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/admin'
+    | '/blog'
     | '/chauffeurs'
     | '/gallery'
     | '/plan-my-trip'
@@ -199,6 +211,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
+  BlogRoute: typeof BlogRoute
   ChauffeursRoute: typeof ChauffeursRoute
   GalleryRoute: typeof GalleryRoute
   PlanMyTripRoute: typeof PlanMyTripRoute
@@ -233,6 +246,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/chauffeurs': {
@@ -319,6 +339,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
+  BlogRoute: BlogRoute,
   ChauffeursRoute: ChauffeursRoute,
   GalleryRoute: GalleryRoute,
   PlanMyTripRoute: PlanMyTripRoute,
