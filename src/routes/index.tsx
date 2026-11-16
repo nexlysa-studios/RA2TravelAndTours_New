@@ -77,7 +77,7 @@ function Home() {
   }).data.filter((p) => p.featured);
   return (
     <>
-      <section className="relative isolate flex min-h-[88vh] items-end overflow-hidden">
+      <section className="relative isolate flex min-h-[100dvh] items-end overflow-hidden md:min-h-[88vh]">
         <video
           autoPlay
           muted
@@ -122,7 +122,7 @@ function Home() {
         </div>
       </section>
 
-      <section className="py-24">
+      <section className="py-12 md:py-24">
         <div className="container-site">
           <div className="mb-12 flex flex-col justify-between gap-6 md:flex-row md:items-end">
             <div className="max-w-2xl">
