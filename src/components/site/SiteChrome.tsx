@@ -2,7 +2,7 @@ import { Link, type LinkProps } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import { ArrowRight, Menu, X, MessageCircle, Phone, Mail, Instagram } from "lucide-react";
 import { CONTACT, NAV } from "@/lib/site";
-import ra2Logo from "@/assets/Ra2logo.png";
+import ra2Logo from "@/assets/Ra2logonew.png";
 import heroVideo from "@/assets/herovid.mp4";
 import whatsappIcon from "@/assets/whatsapp.svg";
 

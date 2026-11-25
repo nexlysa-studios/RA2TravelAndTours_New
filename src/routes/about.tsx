@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, CalendarDays, CarFront, ClipboardCheck, UsersRound } from "lucide-react";
-import hero from "@/assets/peninsula.jpg";
 import newAbout from "@/assets/new-about.JPG";
 import { CONTACT } from "@/lib/site";
 import { GoldButton } from "@/components/site/SiteChrome";
@@ -68,8 +67,8 @@ function Page() {
       <section className="relative isolate overflow-hidden bg-forest-deep text-ivory">
         <div className="absolute inset-0 -z-10 md:left-[43%]">
           <img
-            src={hero}
-            alt="The winding coastal road along Cape Town's Atlantic coast at sunset"
+            src={newAbout}
+            alt="The RA2 family together beside their vehicle at a stadium"
             className="h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-forest-deep via-forest-deep/65 to-forest-deep/20 md:bg-gradient-to-r md:from-forest-deep md:via-forest-deep/55 md:to-transparent" />
